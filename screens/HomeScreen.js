@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, SectionList } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native';
 import Constants from "expo-constants";
-import { dataTypes } from '../shared/enum/main';
 import { fetchPokemon } from '../shared/api/pokemon';
-import { fetchMoves } from '../shared/api/moves';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class LotsOfGreetings extends Component {
   _isMounted = false;
@@ -12,17 +11,23 @@ export default class LotsOfGreetings extends Component {
     super(props);
 
     this.state = {
-      sections: [
-        {
-          title: 'Pokemon',
-          data: []
-        },
-        {
-          title: 'Moves',
-          data: []
-        }
-      ]
+      pokemon: []
     }
+
+    // Item component
+    this.pokeItem = ({ pokemon, pokeId }) => (
+      <View style={styles.item}>
+        <TouchableOpacity style={styles.pokebutton} onPress={() => this.onPressPokemon(pokemon, pokeId)}>
+          <Text style={styles.pokenumber}>{pokeId}</Text>
+          <Text style={styles.title}>{pokemon.name}</Text>
+          <Image style={styles.pokemon} source={{ uri: pokemon.img }} />
+        </TouchableOpacity>
+        { pokemon.touched && 
+        <TouchableOpacity style={styles.pokemonInfoOverlay}>
+          <Text>Test</Text>
+        </TouchableOpacity>}
+      </View>
+    );
   }
 
   componentDidMount() {
@@ -30,9 +35,6 @@ export default class LotsOfGreetings extends Component {
 
     // Get Pokemon list data
     this.getPokemon();
-
-    // Get Pokemon move list data
-    this.getMoves();
   }
 
   componentWillUnmount() {
@@ -44,73 +46,94 @@ export default class LotsOfGreetings extends Component {
     if (this._isMounted) {
       fetchPokemon()
         .then(response => {
-          const newArray = this.state.sections.slice();
-          newArray[dataTypes.POKEMON].data = response.results;
-          this.setState({ sections: newArray });
+          this.setState({ pokemon: response.results });
+
+          // Get image URL
+          let tempPokemonArray = this.state.pokemon.slice();
+          tempPokemonArray.forEach((pokemon, index) => {
+            pokemon['img'] = this.getPokePic((index + 1));
+            pokemon['touched'] = false;
+          });
+          this.setState({ pokemon: tempPokemonArray });
         });
     }
   }
 
-  // Get Pokemon list data
-  getMoves = async () => {
-    if (this._isMounted) {
-      fetchMoves()
-        .then(response => {
-          const newArray = this.state.sections.slice();
-          newArray[dataTypes.MOVES].data = response.results;
-          this.setState({ sections: newArray })
-        });
-    }
+  // Get Pokemon picture URL
+  getPokePic = (imgid) => {
+    let url = 'https://pokeres.bastionbot.org/images/pokemon/' + imgid + '.png';
+    return url;
+  }
+
+  // On press Pokemon handler
+  onPressPokemon = (pokemon, pokemonId) => {
+    pokemon.touched = !pokemon.touched;
+    let tempPokemonArray = this.state.pokemon.slice();
+    tempPokemonArray.filter((pokemon, index) => {
+      index != pokemonId
+    });
+    tempPokemonArray[(pokemonId - 1)] = pokemon;
+    this.setState({ pkemon: tempPokemonArray });
   }
   
   render() {
     return (
-      <View style={{ alignItems: 'center', top: 50 }}>
-        <SectionList
-          sections={this.state.sections}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => <Item title={item.name} />}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={StyleSheet.header}>{title}</Text>
-          )}
-          />
-      </View>
+      <SafeAreaView>
+        <ScrollView>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            {this.state.pokemon.map((item, index) => <this.pokeItem key={index} pokemon={item} pokeid={(index + 1)} />)}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
-
-class Greeting extends Component {
-  render() {
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <Text>Hello {this.props.name}!</Text>
-      </View>
-    );
-  }
-}
-
-const Item = ({ title }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
 
 const styles = StyleSheet.create({
-          container: {
-          flex: 1,
-    marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight
   },
   item: {
-          backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8
+    backgroundColor: "#fff",
+    marginVertical: 10,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    shadowColor: '#cecece',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 2,
+    width: '45%'
   },
-  header: {
-          fontSize: 32,
-    backgroundColor: "#fff"
+  pokebutton: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  pokenumber: {
+    fontSize: 42,
+    position: 'absolute',
+    fontWeight: 'bold',
+    color: '#eeeeee',
+    marginLeft: 0,
+    top: 0,
+    left: 10
   },
   title: {
-          fontSize: 24
+    fontSize: 15,
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+    marginBottom: 15,
+    position: 'relative',
+    top: 6,
+    color: '#000'
+  },
+  pokemon: {
+    width: 80,
+    height: 80
+  },
+  pokemonInfoOverlay: {
+    width: '100%',
+    height: '90%',
+    backgroundColor: '#ffffff'
   }
 });

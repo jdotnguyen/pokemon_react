@@ -5,7 +5,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Home';
+const INITIAL_ROUTE_NAME = 'Pokédex';
 
 export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -32,8 +32,8 @@ export default function BottomTabNavigator({ navigation, route }) {
         }}
       />
       <BottomTab.Screen
-        name="Pokedex"
-        component={LinksScreen}
+        name="Pokédex"
+        component={HomeScreen}
         options={{
           title: 'Pokédex',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
@@ -64,7 +64,7 @@ function getHeaderTitle(route) {
 
   switch (routeName) {
     case 'Home':
-      return 'Home';
+      return 'Poképedia';
     case 'Links':
       return 'Links to learn more';
     case 'Links':
