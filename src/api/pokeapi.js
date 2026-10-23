@@ -76,6 +76,53 @@ export function useEvolutionChain(url) {
   });
 }
 
+export function useRegions() {
+  return useQuery({
+    queryKey: ['regions'],
+    queryFn: async () => (await getJson(`${BASE}/region?limit=100`)).results,
+    ...STATIC,
+  });
+}
+
+export function useRegion(name) {
+  return useQuery({
+    queryKey: ['region', name],
+    queryFn: () => getJson(`${BASE}/region/${name}`),
+    enabled: !!name,
+    ...STATIC,
+  });
+}
+
+/** A regional Pokédex (e.g. "kanto", "updated-johto") with its own numbering. */
+export function usePokedex(name) {
+  return useQuery({
+    queryKey: ['pokedex', name],
+    queryFn: () => getJson(`${BASE}/pokedex/${name}`),
+    enabled: !!name,
+    ...STATIC,
+  });
+}
+
+export function useLocation(name) {
+  return useQuery({
+    queryKey: ['location', name],
+    queryFn: () => getJson(`${BASE}/location/${name}`),
+    enabled: !!name,
+    ...STATIC,
+  });
+}
+
+/** Each location has one or more areas (e.g. a cave's floors); encounters live on the areas. */
+export function useLocationAreas(urls = []) {
+  return useQueries({
+    queries: urls.map((url) => ({
+      queryKey: ['location-area', url],
+      queryFn: () => getJson(url),
+      ...STATIC,
+    })),
+  });
+}
+
 export function useTypes(names = []) {
   return useQueries({
     queries: names.map((name) => ({

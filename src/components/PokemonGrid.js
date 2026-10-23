@@ -8,7 +8,7 @@ import { ACCENT } from './detail/shared';
 export const GRID_GAP = 10;
 
 /**
- * Virtualized two-column grid of Pokémon tiles. `data` items are { id, name? }.
+ * Virtualized two-column grid of Pokémon tiles. `data` items are { id, name?, number? }.
  * Shared by the Pokédex, Favourites and Search tabs.
  */
 export default function PokemonGrid({
@@ -27,7 +27,7 @@ export default function PokemonGrid({
   const renderItem = useCallback(
     ({ item }) => (
       <View style={styles.cell}>
-        <PokemonTile id={item.id} name={item.name} />
+        <PokemonTile id={item.id} name={item.name} number={item.number} />
       </View>
     ),
     []

@@ -15,6 +15,11 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Icon sf={{ default: 'heart', selected: 'heart.fill' }} md="favorite" />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="regions">
+        <NativeTabs.Trigger.Label>Regions</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'map', selected: 'map.fill' }} md="map" />
+      </NativeTabs.Trigger>
+
       {/* role="search" gets the separate round search button on iOS 26 */}
       <NativeTabs.Trigger name="search" role="search">
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
