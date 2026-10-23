@@ -17,6 +17,9 @@ const SPECIAL_NAMES = {
   flabebe: 'Flabébé',
 };
 
+// IDs above this are alternate forms (megas, regionals...), not National Dex entries.
+export const FORM_ID_START = 10000;
+
 export function titleCase(slug = '') {
   return slug
     .split('-')

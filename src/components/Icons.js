@@ -34,6 +34,24 @@ export function Heart({ size = 24, color = '#fff', filled = false }) {
   );
 }
 
+export function SearchIcon({ size = 18, color = '#8A94A1' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx="10.5" cy="10.5" r="6.5" stroke={color} strokeWidth="2.2" fill="none" />
+      <Line x1="15.5" y1="15.5" x2="20.5" y2="20.5" stroke={color} strokeWidth="2.2" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function ClearIcon({ size = 18, color = '#A0A8B3' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx="12" cy="12" r="10" fill={color} />
+      <Path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
 export function ChevronRight({ size = 18, color = '#9AA3AE' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

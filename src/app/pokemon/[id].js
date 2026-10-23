@@ -10,6 +10,7 @@ import { primaryColor } from '../../lib/types';
 import { toggleFavourite, useIsFavourite } from '../../lib/favourites';
 import { BackArrow, Heart, PokeballWatermark } from '../../components/Icons';
 import TypeBadge from '../../components/TypeBadge';
+import SheetTabs from '../../components/SheetTabs';
 import AboutTab from '../../components/detail/AboutTab';
 import StatsTab from '../../components/detail/StatsTab';
 import EvolutionTab from '../../components/detail/EvolutionTab';
@@ -86,17 +87,7 @@ export default function PokemonDetailScreen() {
       />
 
       <View style={styles.sheet}>
-        <View style={styles.tabs}>
-          {TABS.map((t) => {
-            const active = t.key === tab;
-            return (
-              <Pressable key={t.key} onPress={() => setTab(t.key)} style={styles.tab} accessibilityRole="tab">
-                <Text style={[styles.tabText, active && styles.tabTextActive]}>{t.label}</Text>
-                <View style={[styles.tabIndicator, active && { backgroundColor: ACCENT }]} />
-              </Pressable>
-            );
-          })}
-        </View>
+        <SheetTabs tabs={TABS} value={tab} onChange={setTab} spread />
 
         {pokemon.isPending ? (
           <ActivityIndicator style={styles.loading} color={ACCENT} />
@@ -167,31 +158,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: ART_OVERLAP,
-  },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E3E7EC',
-  },
-  tab: {
-    paddingTop: 12,
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#A0A8B3',
-    fontWeight: '500',
-    paddingBottom: 12,
-  },
-  tabTextActive: {
-    color: '#1F2A37',
-    fontWeight: '700',
-  },
-  tabIndicator: {
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: 'transparent',
   },
   tabContent: {
     paddingHorizontal: 24,

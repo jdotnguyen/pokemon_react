@@ -1,10 +1,8 @@
 import { useInfiniteQuery, useQueries, useQuery } from '@tanstack/react-query';
-import { idFromUrl } from '../lib/format';
+import { FORM_ID_START, idFromUrl } from '../lib/format';
 
 const BASE = 'https://pokeapi.co/api/v2';
 const PAGE_SIZE = 60;
-// IDs above this are alternate forms (megas, regionals...), not National Dex entries.
-const FORM_ID_START = 10000;
 
 async function getJson(url) {
   const res = await fetch(url);

@@ -15,6 +15,11 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Icon sf={{ default: 'heart', selected: 'heart.fill' }} md="favorite" />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="types">
+        <NativeTabs.Trigger.Label>Types</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'flame', selected: 'flame.fill' }} md="local_fire_department" />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="regions">
         <NativeTabs.Trigger.Label>Regions</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'map', selected: 'map.fill' }} md="map" />

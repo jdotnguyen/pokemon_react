@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-// The native search field lives in a stack header, so this tab gets its own Stack.
+// Header hidden so Search matches the other tabs (large in-page title, our own search field).
 export default function SearchLayout() {
-  return <Stack />;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

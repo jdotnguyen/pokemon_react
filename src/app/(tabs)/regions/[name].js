@@ -9,6 +9,7 @@ import { formatName, idFromUrl } from '../../../lib/format';
 import { generationLabel, locationLabel, regionColor, versionGroupLabel } from '../../../lib/regions';
 import { BackArrow, ChevronRight, PokeballWatermark } from '../../../components/Icons';
 import PokemonGrid from '../../../components/PokemonGrid';
+import SheetTabs from '../../../components/SheetTabs';
 import { ACCENT, EmptyState } from '../../../components/detail/shared';
 
 const SECTIONS = [
@@ -132,17 +133,7 @@ export default function RegionScreen() {
       </View>
 
       <View style={styles.sheet}>
-        <View style={styles.tabs}>
-          {SECTIONS.map((s) => {
-            const active = s.key === section;
-            return (
-              <Pressable key={s.key} onPress={() => setSection(s.key)} style={styles.tab} accessibilityRole="tab">
-                <Text style={[styles.tabText, active && styles.tabTextActive]}>{s.label}</Text>
-                <View style={[styles.tabIndicator, active && { backgroundColor: ACCENT }]} />
-              </Pressable>
-            );
-          })}
-        </View>
+        <SheetTabs tabs={SECTIONS} value={section} onChange={setSection} />
 
         <View style={styles.body}>
           {region.isPending ? (
@@ -202,31 +193,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 32,
     paddingTop: 8,
     overflow: 'hidden',
-  },
-  tabs: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    gap: 28,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E3E7EC',
-  },
-  tab: {
-    paddingTop: 12,
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#A0A8B3',
-    fontWeight: '500',
-    paddingBottom: 12,
-  },
-  tabTextActive: {
-    color: '#1F2A37',
-    fontWeight: '700',
-  },
-  tabIndicator: {
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: 'transparent',
   },
   body: {
     flex: 1,
