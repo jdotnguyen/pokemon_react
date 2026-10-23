@@ -34,6 +34,20 @@ export function usePokedexList() {
   });
 }
 
+/** Every National Dex name + id in one request (~1k small rows), for search. */
+export function usePokemonIndex() {
+  return useQuery({
+    queryKey: ['pokedex-index'],
+    queryFn: async () => {
+      const data = await getJson(`${BASE}/pokemon?limit=100000`);
+      return data.results
+        .map((r) => ({ name: r.name, id: idFromUrl(r.url) }))
+        .filter((p) => p.id != null && p.id < FORM_ID_START);
+    },
+    ...STATIC,
+  });
+}
+
 /** Full /pokemon/{id} payload — tiles use it for types, the detail screen for everything else. */
 export function usePokemon(id) {
   return useQuery({

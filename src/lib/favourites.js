@@ -17,6 +17,15 @@ export function toggleFavourite(id) {
   listeners.forEach((l) => l());
 }
 
+/** The current Set of favourite ids (a new Set each time it changes). */
+export function useFavourites() {
+  return useSyncExternalStore(
+    subscribe,
+    () => favourites,
+    () => favourites
+  );
+}
+
 export function useIsFavourite(id) {
   return useSyncExternalStore(
     subscribe,

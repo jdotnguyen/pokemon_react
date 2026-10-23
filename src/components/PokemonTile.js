@@ -5,15 +5,18 @@ import { router } from 'expo-router';
 import { usePokemon } from '../api/pokeapi';
 import { artworkUrl, formatName, padId } from '../lib/format';
 import { primaryColor } from '../lib/types';
-import { PokeballWatermark } from './Icons';
+import { toggleFavourite, useIsFavourite } from '../lib/favourites';
+import { Heart, PokeballWatermark } from './Icons';
 import TypeBadge from './TypeBadge';
 
 export const TILE_HEIGHT = 112;
 
-function PokemonTile({ id, name }) {
+function PokemonTile({ id, name: listName }) {
   // Only tiles that are actually rendered (on screen + a small buffer) fetch their details.
   const { data } = usePokemon(id);
   const types = data?.types.map((t) => t.type.name) ?? [];
+  const name = listName ?? data?.name ?? '';
+  const isFavourite = useIsFavourite(id);
 
   return (
     <Pressable
@@ -46,6 +49,17 @@ function PokemonTile({ id, name }) {
         transition={150}
         cachePolicy="memory-disk"
       />
+
+      {/* Nested Pressable: handles its own tap, so it doesn't open the detail page */}
+      <Pressable
+        onPress={() => toggleFavourite(id)}
+        hitSlop={10}
+        style={styles.heart}
+        accessibilityRole="button"
+        accessibilityLabel={isFavourite ? `Remove ${formatName(name)} from favourites` : `Add ${formatName(name)} to favourites`}
+      >
+        <Heart size={18} filled={isFavourite} />
+      </Pressable>
     </Pressable>
   );
 }
@@ -90,6 +104,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 2,
     marginRight: 28,
+  },
+  heart: {
+    position: 'absolute',
+    left: 12,
+    bottom: 10,
+    zIndex: 2,
   },
   image: {
     position: 'absolute',
