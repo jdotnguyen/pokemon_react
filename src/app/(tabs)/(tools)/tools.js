@@ -4,9 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HubCard from '../../../components/HubCard';
 import ScreenTitle from '../../../components/ScreenTitle';
+import { offlinePack, offlineSupported } from '../../../lib/offline';
 
 export default function ToolsScreen() {
   const insets = useSafeAreaInsets();
+  const pack = offlinePack.use();
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
@@ -17,6 +19,14 @@ export default function ToolsScreen() {
         <HubCard title="Daily challenge" subtitle="Five silhouettes, the same for everyone. Keep your streak" color="#F4A340" onPress={() => router.push('/daily')} />
         <HubCard title="Who's that Pokémon?" subtitle="Name the silhouette. Track your streak" color="#48D0B0" onPress={() => router.push('/quiz')} />
         <HubCard title="Compare" subtitle="Stats and type matchup, side by side" color="#F67FA1" onPress={() => router.push('/compare')} />
+        {offlineSupported ? (
+          <HubCard
+            title="Offline mode"
+            subtitle={pack.completedAt ? `Downloaded ${new Date(pack.completedAt).toLocaleDateString()}` : 'Download everything so it loads instantly with no connection'}
+            color="#5B8DEF"
+            onPress={() => router.push('/offline')}
+          />
+        ) : null}
       </ScrollView>
     </View>
   );

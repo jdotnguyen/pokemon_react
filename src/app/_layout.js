@@ -9,7 +9,9 @@ export default function RootLayout() {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        defaultOptions: { queries: { retry: 2, refetchOnWindowFocus: false } },
+        // offlineFirst: always try the fetch once, even when offline, so the PWA's service worker
+        // can answer from its cache (the default would leave queries paused forever).
+        defaultOptions: { queries: { retry: 2, refetchOnWindowFocus: false, networkMode: 'offlineFirst' } },
       })
   );
 
@@ -25,6 +27,7 @@ export default function RootLayout() {
           <Stack.Screen name="quiz" />
           <Stack.Screen name="pokedex" />
           <Stack.Screen name="daily" />
+          <Stack.Screen name="offline" />
         </Stack>
       </SafeAreaProvider>
     </QueryClientProvider>
