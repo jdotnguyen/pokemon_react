@@ -155,20 +155,151 @@ export function evolutionPairs(chain) {
  * has level-up data for, sorted by level.
  */
 export function levelUpMoves(moves = []) {
+  return movesByMethod(moves, 'level-up');
+}
+
+// Shiny official artwork lives under a /shiny subfolder, keyed by the same id.
+export function shinyArtworkUrl(id) {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
+}
+
+export function itemSpriteUrl(name) {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${name}.png`;
+}
+
+/**
+ * Pick the artwork for a Pokémon payload, preferring what the API says it has
+ * and falling back to the conventional sprite URL. Returns null for shiny when
+ * the form has no shiny artwork.
+ */
+export function pickArtwork(pokemon, id, shiny = false) {
+  const art = pokemon?.sprites?.other?.['official-artwork'];
+  if (shiny) return art?.front_shiny ?? (pokemon ? null : shinyArtworkUrl(id));
+  return art?.front_default ?? artworkUrl(id);
+}
+
+/** A species' varieties as { id, name, label, isDefault }, default form first. */
+export function speciesVarieties(species) {
+  const list = (species?.varieties ?? []).map((v) => ({
+    id: idFromUrl(v.pokemon.url),
+    name: v.pokemon.name,
+    isDefault: v.is_default,
+  }));
+  list.sort((a, b) => Number(b.isDefault) - Number(a.isDefault) || a.id - b.id);
+  return list.map((v) => ({ ...v, label: varietyLabel(species.name, v.name, v.isDefault) }));
+}
+
+// "raichu-alola" (species "raichu") -> "Alola"; the default form -> "Normal".
+export function varietyLabel(speciesName, varietyName, isDefault = false) {
+  if (isDefault || varietyName === speciesName) return 'Normal';
+  const rest = varietyName.startsWith(`${speciesName}-`)
+    ? varietyName.slice(speciesName.length + 1)
+    : varietyName;
+  return titleCase(rest);
+}
+
+/** Held items as { name, rarity } using the most recent game's drop chance. */
+export function heldItems(held = []) {
+  return held.map((h) => ({
+    name: h.item.name,
+    rarity: h.version_details?.[h.version_details.length - 1]?.rarity ?? null,
+  }));
+}
+
+/** Short status labels for legendary / mythical / baby Pokémon. */
+export function speciesBadges(species) {
+  const badges = [];
+  if (species?.is_legendary) badges.push('Legendary');
+  if (species?.is_mythical) badges.push('Mythical');
+  if (species?.is_baby) badges.push('Baby');
+  return badges;
+}
+
+// Pick the cry URL: current games first, falling back to the legacy recording.
+export function cryUrl(pokemon) {
+  return pokemon?.cries?.latest ?? pokemon?.cries?.legacy ?? null;
+}
+
+/**
+ * Side-by-side stat comparison. `a`/`b` are `pokemon.stats` arrays.
+ * Each row has a `winner` of 'a', 'b', or null for a tie.
+ */
+export function compareStats(a = [], b = []) {
+  const bByName = Object.fromEntries(b.map((s) => [s.stat.name, s.base_stat]));
+  const winnerOf = (x, y) => (x === y ? null : x > y ? 'a' : 'b');
+  const rows = a.map((s) => {
+    const av = s.base_stat;
+    const bv = bByName[s.stat.name] ?? 0;
+    return {
+      key: s.stat.name,
+      label: STAT_LABELS[s.stat.name] ?? formatName(s.stat.name),
+      a: av,
+      b: bv,
+      winner: winnerOf(av, bv),
+    };
+  });
+  const sum = (list) => list.reduce((t, s) => t + s.base_stat, 0);
+  const total = { key: 'total', label: 'Total', a: sum(a), b: sum(b), winner: winnerOf(sum(a), sum(b)) };
+  const tally = {
+    a: rows.filter((r) => r.winner === 'a').length,
+    b: rows.filter((r) => r.winner === 'b').length,
+  };
+  return { rows, total, tally };
+}
+
+/** How hard each of the attacker's types hits a defender, given the defender's multiplier map. */
+export function matchupMultipliers(attackerTypes = [], defenderMultipliers = {}) {
+  return attackerTypes.map((type) => ({ type, multiplier: defenderMultipliers[type] ?? 1 }));
+}
+
+// Name ("char") or number ("4", "#004") search over { name, id } entries.
+export function matchesQuery(item, query) {
+  const q = query.trim().toLowerCase().replace(/^#/, '');
+  if (!q) return true;
+  if (/^\d+$/.test(q)) return String(item.id).startsWith(String(Number(q)));
+  return item.name.includes(q.replace(/\s+/g, '-')) || formatName(item.name).toLowerCase().includes(q);
+}
+
+export const LEARN_METHODS = [
+  { key: 'level-up', label: 'Level up' },
+  { key: 'machine', label: 'TM / HM' },
+  { key: 'egg', label: 'Egg' },
+  { key: 'tutor', label: 'Tutor' },
+];
+
+/**
+ * Moves learned a given way, from the most recent version group that has any
+ * for that method. Sorted by level (0 = on evolution / not level based), then name.
+ */
+export function movesByMethod(moves = [], method) {
   let latestGroup = -1;
   for (const m of moves) {
     for (const v of m.version_group_details) {
-      if (v.move_learn_method.name === 'level-up') {
+      if (v.move_learn_method.name === method) {
         latestGroup = Math.max(latestGroup, idFromUrl(v.version_group.url) ?? -1);
       }
     }
   }
+  if (latestGroup < 0) return [];
   const result = [];
   for (const m of moves) {
     const detail = m.version_group_details.find(
-      (v) => v.move_learn_method.name === 'level-up' && idFromUrl(v.version_group.url) === latestGroup
+      (v) => v.move_learn_method.name === method && idFromUrl(v.version_group.url) === latestGroup
     );
     if (detail) result.push({ name: m.move.name, level: detail.level_learned_at });
   }
   return result.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+}
+
+/** Learn methods this Pokémon actually has moves for, in display order. */
+export function availableMethods(moves = []) {
+  return LEARN_METHODS.filter((m) => movesByMethod(moves, m.key).length > 0);
+}
+
+/** Short English effect text of a /move response, with $effect_chance filled in. */
+export function moveEffect(move) {
+  const entry = move?.effect_entries?.find((e) => e.language?.name === 'en');
+  const text = entry?.short_effect;
+  if (!text) return null;
+  return text.replace(/\$effect_chance/g, String(move.effect_chance ?? ''));
 }

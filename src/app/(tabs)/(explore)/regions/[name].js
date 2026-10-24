@@ -4,13 +4,13 @@ import { FlashList } from '@shopify/flash-list';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePokedex, useRegion } from '../../../api/pokeapi';
-import { formatName, idFromUrl } from '../../../lib/format';
-import { generationLabel, locationLabel, regionColor, versionGroupLabel } from '../../../lib/regions';
-import { BackArrow, ChevronRight, PokeballWatermark } from '../../../components/Icons';
-import PokemonGrid from '../../../components/PokemonGrid';
-import SheetTabs from '../../../components/SheetTabs';
-import { ACCENT, EmptyState } from '../../../components/detail/shared';
+import { usePokedex, useRegion } from '../../../../api/pokeapi';
+import { formatName, idFromUrl } from '../../../../lib/format';
+import { generationLabel, locationLabel, regionColor, versionGroupLabel } from '../../../../lib/regions';
+import { BackArrow, ChevronRight, PokeballWatermark } from '../../../../components/Icons';
+import PokemonGrid from '../../../../components/PokemonGrid';
+import SheetTabs from '../../../../components/SheetTabs';
+import { ACCENT, EmptyState } from '../../../../components/detail/shared';
 
 const SECTIONS = [
   { key: 'pokedex', label: 'Pokédex' },

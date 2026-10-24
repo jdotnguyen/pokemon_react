@@ -3,12 +3,13 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRegion, useRegions } from '../../../api/pokeapi';
-import { artworkUrl, formatName } from '../../../lib/format';
-import { generationLabel, regionColor, regionStarters, versionGroupLabel } from '../../../lib/regions';
-import { PokeballWatermark } from '../../../components/Icons';
-import ScreenTitle from '../../../components/ScreenTitle';
-import { ACCENT } from '../../../components/detail/shared';
+import { useRegion, useRegions } from '../../../../api/pokeapi';
+import { artworkUrl, formatName } from '../../../../lib/format';
+import { generationLabel, regionColor, regionStarters, versionGroupLabel } from '../../../../lib/regions';
+import { PokeballWatermark } from '../../../../components/Icons';
+import HubBack from '../../../../components/HubBack';
+import ScreenTitle from '../../../../components/ScreenTitle';
+import { ACCENT } from '../../../../components/detail/shared';
 
 function RegionCard({ name, index }) {
   const { data } = useRegion(name);
@@ -55,6 +56,7 @@ export default function RegionsScreen() {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}>
+        <HubBack fallback="/explore" />
         <ScreenTitle>Regions</ScreenTitle>
         {isPending ? (
           <ActivityIndicator style={styles.status} color={ACCENT} />

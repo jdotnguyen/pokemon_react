@@ -11,8 +11,9 @@ import TypeBadge from './TypeBadge';
 
 export const TILE_HEIGHT = 112;
 
+// `badge` replaces the number with a short label (e.g. a stat when sorting).
 // `number` overrides the displayed number (e.g. a regional Pokédex entry); defaults to the National Dex id.
-function PokemonTile({ id, name: listName, number }) {
+function PokemonTile({ id, name: listName, number, badge }) {
   // Only tiles that are actually rendered (on screen + a small buffer) fetch their details.
   const { data } = usePokemon(id);
   const types = data?.types.map((t) => t.type.name) ?? [];
@@ -31,7 +32,7 @@ function PokemonTile({ id, name: listName, number }) {
       accessibilityLabel={`${formatName(name)}, number ${id}`}
     >
       <PokeballWatermark size={96} style={styles.watermark} />
-      <Text style={styles.number}>{padId(number ?? id)}</Text>
+      <Text style={styles.number}>{badge ?? padId(number ?? id)}</Text>
 
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1}>

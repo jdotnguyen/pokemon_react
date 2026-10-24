@@ -1,4 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import {
   englishEntry,
   formatHeight,
@@ -6,33 +9,76 @@ import {
   formatPercent,
   formatWeight,
   genderRatio,
+  heldItems,
+  itemSpriteUrl,
   speciesLabel,
+  titleCase,
 } from '../../lib/format';
-import { InfoRow, SectionTitle, text } from './shared';
-
-function latestFlavorText(entries = []) {
-  const en = entries.filter((e) => e.language?.name === 'en');
-  const last = en[en.length - 1];
-  return last?.flavor_text.replace(/[\f\n\r­]+/g, ' ').replace(/\s+/g, ' ').trim();
-}
+import { flavorEntries } from '../../lib/browse';
+import { versionLabel } from '../../lib/regions';
+import { Chip, InfoRow, SectionTitle, text } from './shared';
 
 export default function AboutTab({ pokemon, species }) {
-  const abilities = pokemon.abilities
-    .map((a) => formatName(a.ability.name) + (a.is_hidden ? ' (hidden)' : ''))
-    .join(', ');
+  const [pickedVersion, setPickedVersion] = useState(null);
+  const entries = flavorEntries(species?.flavor_text_entries);
+  const activeEntry = entries.find((e) => e.version === pickedVersion) ?? entries[entries.length - 1];
 
   const gender = genderRatio(species?.gender_rate);
-  const description = latestFlavorText(species?.flavor_text_entries);
+  const held = heldItems(pokemon.held_items);
   const genus = speciesLabel(englishEntry(species?.genera, 'genus') ?? '');
 
   return (
     <View>
-      {description ? <Text style={styles.description}>{description}</Text> : null}
+      {activeEntry ? <Text style={styles.description}>{activeEntry.text}</Text> : null}
+      {entries.length > 1 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.versions}>
+          {entries.map((e) => (
+            <Chip
+              key={e.version}
+              label={versionLabel(e.version)}
+              active={e.version === activeEntry.version}
+              onPress={() => setPickedVersion(e.version)}
+            />
+          ))}
+        </ScrollView>
+      )}
 
       <InfoRow label="Species">{genus || '—'}</InfoRow>
       <InfoRow label="Height">{formatHeight(pokemon.height)}</InfoRow>
       <InfoRow label="Weight">{formatWeight(pokemon.weight)}</InfoRow>
-      <InfoRow label="Abilities">{abilities}</InfoRow>
+      <InfoRow label="Abilities">
+        <View style={styles.abilities}>
+          {pokemon.abilities.map((a) => (
+            <Pressable
+              key={a.ability.name}
+              onPress={() => router.push(`/abilities/${a.ability.name}`)}
+              hitSlop={6}
+              accessibilityRole="link"
+              accessibilityLabel={`${formatName(a.ability.name)} ability`}
+            >
+              <Text style={styles.ability}>
+                {formatName(a.ability.name)}
+                {a.is_hidden ? <Text style={text.muted}> (hidden)</Text> : null}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </InfoRow>
+      {held.length > 0 && (
+        <InfoRow label="Held Items">
+          <View>
+            {held.map((h) => (
+              <View key={h.name} style={styles.itemRow}>
+                <Image source={{ uri: itemSpriteUrl(h.name) }} style={styles.itemIcon} contentFit="contain" />
+                <Text style={text.value}>
+                  {formatName(h.name)}
+                  {h.rarity != null ? ` (${h.rarity}%)` : ''}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </InfoRow>
+      )}
 
       <SectionTitle>Breeding</SectionTitle>
       <InfoRow label="Gender">
@@ -55,6 +101,13 @@ export default function AboutTab({ pokemon, species }) {
       <InfoRow label="Egg Cycle">
         {species?.hatch_counter != null ? `${species.hatch_counter} cycles` : '—'}
       </InfoRow>
+
+      <SectionTitle>Other</SectionTitle>
+      <InfoRow label="Habitat">{species?.habitat ? titleCase(species.habitat.name) : '—'}</InfoRow>
+      <InfoRow label="Color">{species?.color ? titleCase(species.color.name) : '—'}</InfoRow>
+      <InfoRow label="Shape">{species?.shape ? titleCase(species.shape.name) : '—'}</InfoRow>
+      <InfoRow label="Growth Rate">{species?.growth_rate ? titleCase(species.growth_rate.name) : '—'}</InfoRow>
+      <InfoRow label="Catch Rate">{species?.capture_rate != null ? String(species.capture_rate) : '—'}</InfoRow>
     </View>
   );
 }
@@ -74,6 +127,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginRight: 4,
+  },
+  versions: {
+    flexGrow: 0,
+    flexShrink: 0,
+    marginBottom: 12,
+  },
+  abilities: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 14,
+    rowGap: 4,
+  },
+  ability: {
+    fontSize: 14,
+    color: '#6C79DB',
+    fontWeight: '600',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  itemIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 6,
   },
   genderValue: {
     marginRight: 20,

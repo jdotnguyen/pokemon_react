@@ -2,12 +2,13 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTypes } from '../../../api/pokeapi';
-import { countDexPokemon } from '../../../lib/typeInfo';
-import { formatName } from '../../../lib/format';
-import { ALL_TYPES, typeColor } from '../../../lib/types';
-import { PokeballWatermark } from '../../../components/Icons';
-import ScreenTitle from '../../../components/ScreenTitle';
+import { useTypes } from '../../../../api/pokeapi';
+import { countDexPokemon } from '../../../../lib/typeInfo';
+import { formatName } from '../../../../lib/format';
+import { ALL_TYPES, typeColor } from '../../../../lib/types';
+import { PokeballWatermark } from '../../../../components/Icons';
+import HubBack from '../../../../components/HubBack';
+import ScreenTitle from '../../../../components/ScreenTitle';
 
 const GAP = 12;
 
@@ -36,6 +37,7 @@ export default function TypesScreen() {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}>
+        <HubBack fallback="/explore" />
         <ScreenTitle>Types</ScreenTitle>
         <View style={styles.grid}>
           {ALL_TYPES.map((type, i) => (

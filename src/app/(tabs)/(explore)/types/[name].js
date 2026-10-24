@@ -3,15 +3,15 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTypes } from '../../../api/pokeapi';
-import { formatName } from '../../../lib/format';
-import { generationLabel } from '../../../lib/regions';
-import { dexPokemonOfType, typeMatchups } from '../../../lib/typeInfo';
-import { typeColor } from '../../../lib/types';
-import { BackArrow, PokeballWatermark } from '../../../components/Icons';
-import PokemonGrid from '../../../components/PokemonGrid';
-import SheetTabs from '../../../components/SheetTabs';
-import { ACCENT, EmptyState, SectionTitle } from '../../../components/detail/shared';
+import { useTypes } from '../../../../api/pokeapi';
+import { formatName } from '../../../../lib/format';
+import { generationLabel } from '../../../../lib/regions';
+import { dexPokemonOfType, typeMatchups } from '../../../../lib/typeInfo';
+import { typeColor } from '../../../../lib/types';
+import { BackArrow, PokeballWatermark } from '../../../../components/Icons';
+import PokemonGrid from '../../../../components/PokemonGrid';
+import SheetTabs from '../../../../components/SheetTabs';
+import { ACCENT, EmptyState, SectionTitle } from '../../../../components/detail/shared';
 
 const SECTIONS = [
   { key: 'matchups', label: 'Matchups' },

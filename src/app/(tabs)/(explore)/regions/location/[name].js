@@ -3,12 +3,12 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocation, useLocationAreas, usePokemon } from '../../../../api/pokeapi';
-import { artworkUrl, englishEntry, formatName } from '../../../../lib/format';
-import { areaLabel, levelRange, summarizeEncounters, versionLabel } from '../../../../lib/regions';
-import { primaryColor } from '../../../../lib/types';
-import { BackArrow, ChevronRight } from '../../../../components/Icons';
-import { ACCENT, EmptyState, SectionTitle } from '../../../../components/detail/shared';
+import { useLocation, useLocationAreas, usePokemon } from '../../../../../api/pokeapi';
+import { artworkUrl, englishEntry, formatName } from '../../../../../lib/format';
+import { areaLabel, levelRange, summarizeEncounters, versionLabel } from '../../../../../lib/regions';
+import { primaryColor } from '../../../../../lib/types';
+import { BackArrow, ChevronRight } from '../../../../../components/Icons';
+import { ACCENT, EmptyState, SectionTitle } from '../../../../../components/detail/shared';
 
 function EncounterRow({ row }) {
   // Cached from the Pokédex tiles where possible; only used for the colour.

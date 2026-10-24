@@ -21,13 +21,14 @@ export default function PokemonGrid({
   onEndReached,
   loadingMore,
   keyboardDismissMode,
+  contentInsetAdjustmentBehavior,
 }) {
   const insets = useSafeAreaInsets();
 
   const renderItem = useCallback(
     ({ item }) => (
       <View style={styles.cell}>
-        <PokemonTile id={item.id} name={item.name} number={item.number} />
+        <PokemonTile id={item.id} name={item.name} number={item.number} badge={item.badge} />
       </View>
     ),
     []
@@ -42,6 +43,7 @@ export default function PokemonGrid({
       onEndReached={onEndReached}
       onEndReachedThreshold={0.6}
       keyboardDismissMode={keyboardDismissMode}
+      contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
       // Leaves room for the floating tab bar on top of the safe area.
       contentContainerStyle={{ paddingHorizontal: 20 - GRID_GAP / 2, paddingBottom: insets.bottom + 90 }}
       ListHeaderComponent={header}

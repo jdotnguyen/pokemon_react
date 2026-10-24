@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 import { useTypes } from '../../api/pokeapi';
 import { formatMultiplier, formatName, STAT_LABELS, typeDefenses } from '../../lib/format';
 import { ALL_TYPES, typeColor } from '../../lib/types';
@@ -64,6 +65,13 @@ export default function StatsTab({ pokemon, name }) {
         />
       ))}
       <StatBar label="Total" value={total} max={TOTAL_MAX} />
+      <Pressable
+        onPress={() => router.push({ pathname: '/calc', params: { a: String(pokemon.id) } })}
+        hitSlop={8}
+        accessibilityRole="link"
+      >
+        <Text style={styles.calcLink}>Open in stat calculator</Text>
+      </Pressable>
 
       <SectionTitle>Type defenses</SectionTitle>
       <Text style={styles.caption}>The effectiveness of each type on {name}.</Text>
@@ -107,6 +115,12 @@ const styles = StyleSheet.create({
   fill: {
     height: '100%',
     borderRadius: 2,
+  },
+  calcLink: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6C79DB',
+    marginTop: 8,
   },
   caption: {
     fontSize: 14,

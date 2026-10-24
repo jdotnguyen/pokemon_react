@@ -1,35 +1,34 @@
 import { useSyncExternalStore } from 'react';
+import { createStore } from './storage';
 
-// Tiny in-memory favourites store (resets on reload). Swap for
-// AsyncStorage-backed persistence when the Favourites screen lands.
-let favourites = new Set();
-const listeners = new Set();
+// Favourites are saved to disk as an array of ids; screens get a Set.
+const store = createStore('favourites', []);
 
-function subscribe(listener) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+let cachedArray = null;
+let cachedSet = new Set();
+function getSet() {
+  const array = store.get();
+  if (array !== cachedArray) {
+    cachedArray = array;
+    cachedSet = new Set(array);
+  }
+  return cachedSet;
 }
 
 export function toggleFavourite(id) {
-  const next = new Set(favourites);
-  next.has(id) ? next.delete(id) : next.add(id);
-  favourites = next;
-  listeners.forEach((l) => l());
+  const array = store.get();
+  store.set(array.includes(id) ? array.filter((x) => x !== id) : [...array, id]);
 }
 
 /** The current Set of favourite ids (a new Set each time it changes). */
 export function useFavourites() {
-  return useSyncExternalStore(
-    subscribe,
-    () => favourites,
-    () => favourites
-  );
+  return useSyncExternalStore(store.subscribe, getSet, getSet);
 }
 
 export function useIsFavourite(id) {
   return useSyncExternalStore(
-    subscribe,
-    () => favourites.has(id),
+    store.subscribe,
+    () => getSet().has(id),
     () => false
   );
 }

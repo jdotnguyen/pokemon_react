@@ -19,6 +19,12 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="pokemon/[id]" />
+          <Stack.Screen name="compare" />
+          <Stack.Screen name="team" />
+          <Stack.Screen name="calc" />
+          <Stack.Screen name="quiz" />
+          <Stack.Screen name="pokedex" />
+          <Stack.Screen name="daily" />
         </Stack>
       </SafeAreaProvider>
     </QueryClientProvider>

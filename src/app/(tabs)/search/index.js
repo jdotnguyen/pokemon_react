@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePokemonIndex } from '../../../api/pokeapi';
+import { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
+import { Stack } from 'expo-router';
+import { useGeneration, useGenerations, usePokemonIndex, useTypes } from '../../../api/pokeapi';
 import { formatName } from '../../../lib/format';
-import PokemonGrid, { GRID_GAP } from '../../../components/PokemonGrid';
-import ScreenTitle from '../../../components/ScreenTitle';
-import { ClearIcon, SearchIcon } from '../../../components/Icons';
+import { hasFlag, statOf, useStatIndex } from '../../../lib/statIndex';
+import { dexPokemonOfType, intersectIds, speciesIdsOfGeneration } from '../../../lib/typeInfo';
+import PokemonGrid from '../../../components/PokemonGrid';
+import SearchFilters from '../../../components/SearchFilters';
+import StatFilters, { statLabel } from '../../../components/StatFilters';
 
 // Search by name ("char") or number ("4", "#004").
 function matches(item, query) {
@@ -18,93 +18,125 @@ function matches(item, query) {
 }
 
 export default function SearchScreen() {
-  const insets = useSafeAreaInsets();
-  const inputRef = useRef(null);
   const [query, setQuery] = useState('');
   const { data, isPending, error, refetch } = usePokemonIndex();
 
-  const results = useMemo(() => (data ?? []).filter((p) => matches(p, query)), [data, query]);
+  // Filters: up to two types (dual-typed Pokémon) and one generation, combined with the text query.
+  const [types, setTypes] = useState([]);
+  const [generation, setGeneration] = useState(null);
+  const typeQueries = useTypes(types);
+  const generationQuery = useGeneration(generation);
+  const generations = useGenerations().data ?? [];
 
-  // Opening the tab with nothing typed puts the cursor straight in the field,
-  // like the system search tab does.
-  useFocusEffect(
-    useCallback(() => {
-      if (!query) {
-        const t = setTimeout(() => inputRef.current?.focus(), 250);
-        return () => clearTimeout(t);
-      }
-    }, [query])
-  );
+  const filtering = types.length > 0 || generation != null;
+  const filterLoading =
+    typeQueries.some((q) => q.isPending) || (generation != null && generationQuery.isPending);
+  const allowed = filtering && !filterLoading
+    ? intersectIds([
+        ...typeQueries.map((q) => dexPokemonOfType(q.data).map((p) => p.id)),
+        ...(generation != null ? [speciesIdsOfGeneration(generationQuery.data)] : []),
+      ])
+    : null;
+
+  // Sorting and stat filters need the saved stat table (downloaded once, on demand).
+  const stats = useStatIndex();
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [sort, setSort] = useState('number');
+  const [cats, setCats] = useState([]);
+  const [minStat, setMinStat] = useState(null);
+  const sortsByStat = sort !== 'number' && sort !== 'name';
+  const needsStats = sortsByStat || cats.length > 0 || minStat != null;
+  const statsMissing = needsStats && !stats.rows;
+  useEffect(() => {
+    if (statsMissing && stats.state === 'idle') stats.load();
+  }, [statsMissing, stats]);
+  const statsPending = statsMissing && (stats.state === 'idle' || stats.state === 'loading');
+
+  const results = useMemo(() => {
+    if (filterLoading || statsMissing) return [];
+    let list = (data ?? []).filter((p) => matches(p, query) && (!allowed || allowed.has(p.id)));
+    const rows = stats.rows;
+    if (rows && cats.length > 0) list = list.filter((p) => rows[p.id] && cats.some((c) => hasFlag(rows[p.id], c)));
+    if (rows && minStat) list = list.filter((p) => rows[p.id] && statOf(rows[p.id], minStat.key) >= minStat.value);
+    if (sort === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    if (rows && sortsByStat) {
+      list = list
+        .filter((p) => rows[p.id])
+        .map((p) => ({ ...p, value: statOf(rows[p.id], sort) }))
+        .sort((a, b) => b.value - a.value || a.id - b.id)
+        .map((p) => ({ ...p, badge: `${statLabel(sort)} ${p.value}` }));
+    }
+    return list;
+  }, [data, query, allowed, filterLoading, statsMissing, stats.rows, cats, minStat, sort, sortsByStat]);
+
+  const toggleType = (t) =>
+    setTypes((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t].slice(-2)));
+  const toggleCat = (c) => setCats((cur) => (cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]));
+  const extraActive = sort !== 'number' || cats.length > 0 || minStat != null;
+  const clearFilters = () => {
+    setTypes([]);
+    setGeneration(null);
+    setSort('number');
+    setCats([]);
+    setMinStat(null);
+  };
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <StatusBar style="dark" />
-
-      {/* Pinned above the grid so the field never scrolls away. */}
-      <View style={styles.header}>
-        <ScreenTitle>Search</ScreenTitle>
-        <View style={styles.field}>
-          <SearchIcon />
-          <TextInput
-            ref={inputRef}
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Name or number"
-            placeholderTextColor="#A0A8B3"
-            style={styles.input}
-            autoCapitalize="none"
-            autoCorrect={false}
-            clearButtonMode="never"
-            returnKeyType="search"
-            accessibilityLabel="Search Pokémon"
-          />
-          {query ? (
-            <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
-              <ClearIcon />
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
-
+    <>
+      {/* The grid must stay the first child so the large title collapses as it scrolls. */}
       <PokemonGrid
         data={results}
-        header={<View style={styles.spacer} />}
-        loading={isPending}
+        header={
+          <View>
+          <SearchFilters
+            extraActive={extraActive}
+            types={types}
+            onToggleType={toggleType}
+            generations={generations}
+            generation={generation}
+            onSelectGeneration={setGeneration}
+            onClear={clearFilters}
+            count={filterLoading || statsPending ? null : results.length}
+          />
+          <StatFilters
+            open={panelOpen}
+            onToggleOpen={() => setPanelOpen((o) => !o)}
+            index={stats}
+            sort={sort}
+            onSort={setSort}
+            cats={cats}
+            onToggleCat={toggleCat}
+            minStat={minStat}
+            onMinStat={setMinStat}
+          />
+          </View>
+        }
+        loading={isPending || filterLoading || statsPending}
         error={error}
         onRetry={() => refetch()}
-        emptyText={query ? `No Pokémon match “${query}”.` : undefined}
+        emptyText={
+          statsMissing
+            ? 'Stat data isn\'t available yet. Open “Sort & stats” for download options.'
+            : query || filtering || extraActive
+              ? 'No Pokémon match your search.'
+              : undefined
+        }
         keyboardDismissMode="on-drag"
+        contentInsetAdjustmentBehavior="automatic"
       />
-    </View>
+      <Stack.Screen
+        options={{
+          title: 'Search',
+          headerLargeTitleEnabled: true,
+          headerSearchBarOptions: {
+            placement: 'automatic',
+            placeholder: 'Name or number',
+            autoCapitalize: 'none',
+            // Handles both a plain string and a native event payload.
+            onChangeText: (e) => setQuery(typeof e === 'string' ? e : (e?.nativeEvent?.text ?? '')),
+          },
+        }}
+      />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    paddingHorizontal: 20 - GRID_GAP / 2,
-  },
-  field: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginHorizontal: GRID_GAP / 2,
-    marginTop: -6,
-    paddingHorizontal: 14,
-    height: 46,
-    borderRadius: 14,
-    backgroundColor: '#F1F3F6',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#1F2A37',
-    paddingVertical: 0,
-  },
-  spacer: {
-    height: 14,
-  },
-});

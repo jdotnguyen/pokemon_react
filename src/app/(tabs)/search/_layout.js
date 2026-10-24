@@ -1,6 +1,18 @@
 import { Stack } from 'expo-router';
 
-// Header hidden so Search matches the other tabs (large in-page title, our own search field).
+// Search keeps the system header on purpose: the native search bar it hosts is what lets the
+// tab bar split Search off as its own glass button on iOS 26+. It's styled to match the other tabs.
 export default function SearchLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack
+      screenOptions={{
+        contentStyle: { backgroundColor: '#fff' },
+        headerShadowVisible: false,
+        headerLargeTitleShadowVisible: false,
+        headerLargeStyle: { backgroundColor: '#fff' },
+        headerLargeTitleStyle: { fontSize: 32, fontWeight: '800', color: '#1F2A37' },
+        headerTintColor: '#1F2A37',
+      }}
+    />
+  );
 }

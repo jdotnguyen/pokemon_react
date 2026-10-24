@@ -1,34 +1,123 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { formatName, levelUpMoves } from '../../lib/format';
-import { EmptyState, SectionTitle } from './shared';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { useMove, useMoveIndex } from '../../api/pokeapi';
+import { availableMethods, formatName, moveEffect, movesByMethod } from '../../lib/format';
+import { typeColor } from '../../lib/types';
+import { ACCENT, Chip, EmptyState } from './shared';
+
+const CLASS_LABEL = { physical: 'Physical', special: 'Special', status: 'Status' };
+
+function Stat({ label, value }) {
+  return (
+    <View style={styles.stat}>
+      <Text style={styles.statValue}>{value ?? '—'}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function MoveDetail({ name }) {
+  const { data, isPending, error } = useMove(name);
+  if (isPending) return <ActivityIndicator style={styles.detailLoading} color={ACCENT} />;
+  if (error || !data) return <Text style={styles.effect}>Couldn't load this move.</Text>;
+  const effect = moveEffect(data);
+  return (
+    <View style={styles.detail}>
+      <View style={styles.statsRow}>
+        <Stat label="Power" value={data.power} />
+        <Stat label="Accuracy" value={data.accuracy != null ? `${data.accuracy}%` : null} />
+        <Stat label="PP" value={data.pp} />
+        <Stat label="Priority" value={data.priority > 0 ? `+${data.priority}` : data.priority} />
+      </View>
+      {effect ? <Text style={styles.effect}>{effect}</Text> : null}
+      <Pressable onPress={() => router.push(`/moves/${name}`)} hitSlop={8} accessibilityRole="link">
+        <Text style={styles.more}>Full details and who learns it</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 export default function MovesTab({ pokemon, color }) {
-  const moves = levelUpMoves(pokemon.moves);
+  const methods = useMemo(() => availableMethods(pokemon.moves), [pokemon.moves]);
+  const [methodKey, setMethodKey] = useState(null);
+  const [open, setOpen] = useState(null);
+  const moveIndex = useMoveIndex();
 
-  if (moves.length === 0) return <EmptyState>No level-up moves recorded.</EmptyState>;
+  const active = methods.find((m) => m.key === methodKey) ?? methods[0];
+  const moves = useMemo(
+    () => (active ? movesByMethod(pokemon.moves, active.key) : []),
+    [pokemon.moves, active]
+  );
+
+  if (!active) return <EmptyState>No moves recorded.</EmptyState>;
 
   return (
     <View>
-      <SectionTitle>Learned by level up</SectionTitle>
-      {moves.map((m) => (
-        <View key={`${m.name}-${m.level}`} style={styles.row}>
-          <View style={[styles.level, { backgroundColor: color }]}>
-            <Text style={styles.levelText}>{m.level === 0 ? 'Evo' : `Lv. ${m.level}`}</Text>
+      {methods.length > 1 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.methods}>
+          {methods.map((m) => (
+            <Chip
+              key={m.key}
+              label={m.label}
+              active={m.key === active.key}
+              onPress={() => {
+                setMethodKey(m.key);
+                setOpen(null);
+              }}
+            />
+          ))}
+        </ScrollView>
+      )}
+
+      {moves.map((m) => {
+        const info = moveIndex.get(m.name);
+        const expanded = open === m.name;
+        return (
+          <View key={`${active.key}-${m.name}`} style={styles.block}>
+            <Pressable
+              onPress={() => setOpen(expanded ? null : m.name)}
+              style={styles.row}
+              accessibilityRole="button"
+              accessibilityState={{ expanded }}
+            >
+              {active.key === 'level-up' && (
+                <View style={[styles.level, { backgroundColor: color }]}>
+                  <Text style={styles.levelText}>{m.level === 0 ? 'Evo' : `Lv. ${m.level}`}</Text>
+                </View>
+              )}
+              <View style={styles.nameWrap}>
+                <Text style={styles.name}>{formatName(m.name)}</Text>
+                {info?.damageClass ? <Text style={styles.cls}>{CLASS_LABEL[info.damageClass]}</Text> : null}
+              </View>
+              {info?.type ? (
+                <View style={[styles.typeChip, { backgroundColor: typeColor(info.type) }]}>
+                  <Text style={styles.typeText}>{formatName(info.type)}</Text>
+                </View>
+              ) : null}
+            </Pressable>
+            {expanded && <MoveDetail name={m.name} />}
           </View>
-          <Text style={styles.name}>{formatName(m.name)}</Text>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  methods: {
+    flexGrow: 0,
+    flexShrink: 0,
+    marginBottom: 6,
+  },
+  block: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#EEF1F4',
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    paddingVertical: 10,
   },
   level: {
     width: 56,
@@ -42,8 +131,64 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
+  nameWrap: {
+    flex: 1,
+  },
   name: {
     fontSize: 14,
     color: '#1F2A37',
+  },
+  cls: {
+    fontSize: 11,
+    color: '#8A94A1',
+    marginTop: 1,
+  },
+  typeChip: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  typeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  detail: {
+    paddingBottom: 12,
+  },
+  detailLoading: {
+    paddingVertical: 12,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    backgroundColor: '#F6F7F9',
+    borderRadius: 12,
+    paddingVertical: 10,
+  },
+  stat: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1F2A37',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#8A94A1',
+    marginTop: 2,
+  },
+  more: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: ACCENT,
+    marginTop: 10,
+  },
+  effect: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#4B5563',
+    marginTop: 10,
   },
 });

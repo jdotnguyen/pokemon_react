@@ -33,3 +33,15 @@ export function typeMatchups(typeData) {
     ],
   };
 }
+
+/** National Dex ids of the species introduced in a /generation/{name} response. */
+export function speciesIdsOfGeneration(genData) {
+  return (genData?.pokemon_species ?? []).map((sp) => idFromUrl(sp.url)).filter((id) => id != null);
+}
+
+/** Ids present in every list. Returns null when there are no lists (i.e. no filtering). */
+export function intersectIds(lists) {
+  if (lists.length === 0) return null;
+  const [first, ...rest] = lists.map((l) => new Set(l));
+  return new Set([...first].filter((id) => rest.every((set) => set.has(id))));
+}
