@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "pokemon_react",
+    "name": "Nguyendex",
     "slug": "pokemon_react",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,7 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./pwa/icons/icon-192.png"
+      "favicon": "./pwa/icons/favicon.png"
     },
     "plugins": [
       "expo-router",

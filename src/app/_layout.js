@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -14,6 +15,11 @@ export default function RootLayout() {
         defaultOptions: { queries: { retry: 2, refetchOnWindowFocus: false, networkMode: 'offlineFirst' } },
       })
   );
+
+  // PWA: fade out the HTML splash screen (injected by scripts/build-pwa.js) once the app has mounted.
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') window.__hideSplash?.();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
