@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGeneration, useGenerations, usePokemonIndex } from '../api/pokeapi';
 import { makeQuestion } from '../lib/quiz';
 import { bestStore, useBestStreak } from '../lib/quizStats';
 import { generationLabel } from '../lib/regions';
 import { speciesIdsOfGeneration } from '../lib/typeInfo';
-import { BackArrow } from '../components/Icons';
+import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
+import ScreenTitle from '../components/ScreenTitle';
 import QuestionCard from '../components/quiz/QuestionCard';
-import { ACCENT, Chip } from '../components/detail/shared';
+import { Chip } from '../components/ui';
+import { colors } from '../theme';
 
 const RECENT = 12; // don't repeat an answer from the last few rounds
 
@@ -62,18 +64,14 @@ export default function QuizScreen() {
     if (streak > best) bestStore.set({ best: streak });
   };
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/tools'));
-
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }}>
-        <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow color="#1F2A37" />
-          </Pressable>
-          <Text style={styles.title}>Who's that Pokémon?</Text>
-          <View style={{ width: 26 }} />
+      <PageWatermark />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 40 }}>
+        <View style={styles.header}>
+          <HubBack fallback="/tools" />
+          <ScreenTitle>Who's that Pokémon?</ScreenTitle>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.gens} contentContainerStyle={styles.gensContent}>
@@ -117,15 +115,14 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, marginBottom: 12 },
-  title: { fontSize: 20, fontWeight: '800', color: '#1F2A37' },
+  header: { paddingHorizontal: 19 }, // HubBack/ScreenTitle add 5 each, lining up with the 24px body
   gens: { flexGrow: 0, flexShrink: 0 },
   gensContent: { paddingHorizontal: 24 },
   scoreRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 14 },
-  score: { fontSize: 28, fontWeight: '800', color: '#1F2A37' },
-  meta: { fontSize: 14, color: '#8A94A1', fontWeight: '600' },
+  score: { fontSize: 28, fontWeight: '800', color: colors.ink },
+  meta: { fontSize: 14, color: colors.muted, fontWeight: '600' },
   body: { paddingHorizontal: 24 },
-  next: { marginTop: 18, borderRadius: 14, backgroundColor: ACCENT, paddingVertical: 14, alignItems: 'center' },
+  next: { marginTop: 18, borderRadius: 14, backgroundColor: colors.accent, paddingVertical: 14, alignItems: 'center' },
   nextText: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  loading: { textAlign: 'center', color: '#8A94A1', marginTop: 60, fontSize: 15 },
+  loading: { textAlign: 'center', color: colors.muted, marginTop: 60, fontSize: 15 },
 });

@@ -2,21 +2,13 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
-import {
-  englishEntry,
-  formatHeight,
-  formatName,
-  formatPercent,
-  formatWeight,
-  genderRatio,
-  heldItems,
-  itemSpriteUrl,
-  speciesLabel,
-  titleCase,
-} from '../../lib/format';
+import { englishEntry, formatHeight, formatName, formatPercent, formatWeight, genderRatio, speciesLabel, titleCase } from '../../lib/format';
 import { flavorEntries } from '../../lib/browse';
 import { versionLabel } from '../../lib/regions';
-import { Chip, InfoRow, SectionTitle, text } from './shared';
+import { Chip, InfoRow, SectionTitle, text } from '../ui';
+import { colors } from '../../theme';
+import { heldItems } from '../../lib/species';
+import { itemSpriteUrl } from '../../lib/sprites';
 
 export default function AboutTab({ pokemon, species }) {
   const [pickedVersion, setPickedVersion] = useState(null);
@@ -116,7 +108,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     lineHeight: 21,
-    color: '#4B5563',
+    color: colors.body,
     marginBottom: 12,
   },
   genderRow: {
@@ -141,7 +133,7 @@ const styles = StyleSheet.create({
   },
   ability: {
     fontSize: 14,
-    color: '#6C79DB',
+    color: colors.accent,
     fontWeight: '600',
   },
   itemRow: {

@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { VirtualList } from './VirtualList';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PokemonTile from './PokemonTile';
-import { ACCENT } from './detail/shared';
+import { colors } from '../theme';
+import { StatusMessage } from './ui';
 
 export const GRID_GAP = 10;
 
@@ -35,7 +36,7 @@ export default function PokemonGrid({
   );
 
   return (
-    <FlashList
+    <VirtualList
       data={data}
       numColumns={2}
       keyExtractor={(item) => String(item.id)}
@@ -48,19 +49,15 @@ export default function PokemonGrid({
       contentContainerStyle={{ paddingHorizontal: 20 - GRID_GAP / 2, paddingBottom: insets.bottom + 90 }}
       ListHeaderComponent={header}
       ListEmptyComponent={
-        loading ? (
-          <ActivityIndicator style={styles.status} color={ACCENT} />
-        ) : error ? (
-          <Pressable onPress={onRetry} style={styles.status}>
-            <Text style={styles.statusText}>Couldn't reach PokeAPI. Tap to retry.</Text>
-          </Pressable>
+        loading || error ? (
+          <StatusMessage loading={loading} error={error} onRetry={onRetry} style={styles.status} textStyle={styles.statusText} />
         ) : emptyText ? (
           <View style={styles.status}>
             <Text style={styles.statusText}>{emptyText}</Text>
           </View>
         ) : null
       }
-      ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footer} color={ACCENT} /> : null}
+      ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footer} color={colors.accent} /> : null}
     />
   );
 }
@@ -75,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusText: {
-    color: '#5B6573',
+    color: colors.subtle,
     fontSize: 15,
     textAlign: 'center',
   },

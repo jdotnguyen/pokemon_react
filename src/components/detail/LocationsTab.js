@@ -3,10 +3,10 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { router } from 'expo-router';
 import { locationNameOfArea, useEncounters } from '../../api/pokeapi';
 import { conditionLabel, encounterAreaLabel, groupEncountersByVersion, methodLabel } from '../../lib/encounters';
-import { formatName } from '../../lib/format';
 import { levelRange, versionLabel } from '../../lib/regions';
 import { ChevronRight } from '../Icons';
-import { ACCENT, Chip, EmptyState } from './shared';
+import { Chip, EmptyState, StatusMessage } from '../ui';
+import { colors } from '../../theme';
 
 function AreaCard({ area, entries }) {
   const [opening, setOpening] = useState(false);
@@ -33,7 +33,7 @@ function AreaCard({ area, entries }) {
     >
       <View style={styles.cardHead}>
         <Text style={styles.areaName}>{encounterAreaLabel(area)}</Text>
-        {opening ? <ActivityIndicator size="small" color={ACCENT} /> : <ChevronRight />}
+        {opening ? <ActivityIndicator size="small" color={colors.accent} /> : <ChevronRight />}
       </View>
       {entries.map((e, i) => (
         <View key={`${e.method}-${i}`} style={styles.entry}>
@@ -56,13 +56,8 @@ export default function LocationsTab({ pokemon, name }) {
   const versions = useMemo(() => groupEncountersByVersion(data), [data]);
   const [picked, setPicked] = useState(null);
 
-  if (isPending) return <ActivityIndicator style={styles.loading} color={ACCENT} />;
-  if (error) {
-    return (
-      <Pressable onPress={() => refetch()} style={styles.loading}>
-        <Text style={styles.muted}>Couldn't load locations. Tap to retry.</Text>
-      </Pressable>
-    );
+  if (isPending || error) {
+    return <StatusMessage loading={isPending} error={error} onRetry={() => refetch()} message="Couldn't load locations." />;
   }
   if (versions.length === 0) {
     return (
@@ -94,14 +89,6 @@ export default function LocationsTab({ pokemon, name }) {
 }
 
 const styles = StyleSheet.create({
-  loading: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  muted: {
-    color: '#5B6573',
-    fontSize: 15,
-  },
   versions: {
     flexGrow: 0,
     flexShrink: 0,
@@ -109,11 +96,11 @@ const styles = StyleSheet.create({
   },
   summary: {
     fontSize: 13,
-    color: '#8A94A1',
+    color: colors.muted,
     marginBottom: 10,
   },
   card: {
-    backgroundColor: '#F6F7F9',
+    backgroundColor: colors.card,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -132,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '700',
-    color: '#1F2A37',
+    color: colors.ink,
     marginRight: 8,
   },
   entry: {
@@ -143,12 +130,12 @@ const styles = StyleSheet.create({
   method: {
     flex: 1,
     fontSize: 13,
-    color: '#4B5563',
+    color: colors.body,
     marginRight: 8,
   },
   detail: {
     fontSize: 13,
-    color: '#1F2A37',
+    color: colors.ink,
     fontWeight: '600',
   },
 });

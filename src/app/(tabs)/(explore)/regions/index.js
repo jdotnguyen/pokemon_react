@@ -1,15 +1,17 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRegion, useRegions } from '../../../../api/pokeapi';
-import { artworkUrl, formatName } from '../../../../lib/format';
+import { formatName } from '../../../../lib/format';
 import { generationLabel, regionColor, regionStarters, versionGroupLabel } from '../../../../lib/regions';
 import { PokeballWatermark } from '../../../../components/Icons';
 import HubBack from '../../../../components/HubBack';
+import PageWatermark from '../../../../components/PageWatermark';
 import ScreenTitle from '../../../../components/ScreenTitle';
-import { ACCENT } from '../../../../components/detail/shared';
+import { artworkUrl } from '../../../../lib/sprites';
+import { StatusMessage } from '../../../../components/ui';
 
 function RegionCard({ name, index }) {
   const { data } = useRegion(name);
@@ -55,15 +57,12 @@ export default function RegionsScreen() {
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}>
         <HubBack fallback="/explore" />
         <ScreenTitle>Regions</ScreenTitle>
-        {isPending ? (
-          <ActivityIndicator style={styles.status} color={ACCENT} />
-        ) : error ? (
-          <Pressable onPress={() => refetch()} style={styles.status}>
-            <Text style={styles.statusText}>Couldn't reach PokeAPI. Tap to retry.</Text>
-          </Pressable>
+        {isPending || error ? (
+          <StatusMessage loading={isPending} error={error} onRetry={() => refetch()} style={styles.status} />
         ) : (
           data.map((r, i) => <RegionCard key={r.name} name={r.name} index={i} />)
         )}
@@ -139,9 +138,5 @@ const styles = StyleSheet.create({
   status: {
     marginTop: 60,
     alignItems: 'center',
-  },
-  statusText: {
-    color: '#5B6573',
-    fontSize: 15,
   },
 });

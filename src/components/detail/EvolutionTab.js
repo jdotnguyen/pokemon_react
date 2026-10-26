@@ -2,9 +2,12 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEvolutionChain } from '../../api/pokeapi';
-import { artworkUrl, evolutionPairs, formatName } from '../../lib/format';
+import { formatName } from '../../lib/format';
 import { ChevronRight, PokeballWatermark } from '../Icons';
-import { ACCENT, EmptyState, SectionTitle } from './shared';
+import { EmptyState, SectionTitle } from '../ui';
+import { colors } from '../../theme';
+import { artworkUrl } from '../../lib/sprites';
+import { evolutionPairs } from '../../lib/species';
 
 function Stage({ member, currentId }) {
   const isCurrent = member.id === currentId;
@@ -17,7 +20,7 @@ function Stage({ member, currentId }) {
       accessibilityLabel={formatName(member.name)}
     >
       <View style={styles.artWrap}>
-        <PokeballWatermark size={84} color="#1F2A37" opacity={0.05} style={styles.ball} />
+        <PokeballWatermark size={84} color={colors.ink} opacity={0.05} style={styles.ball} />
         <Image source={{ uri: artworkUrl(member.id) }} style={styles.art} contentFit="contain" cachePolicy="memory-disk" />
       </View>
       <Text style={[styles.stageName, isCurrent && styles.current]}>{formatName(member.name)}</Text>
@@ -28,7 +31,7 @@ function Stage({ member, currentId }) {
 export default function EvolutionTab({ pokemon, species }) {
   const chain = useEvolutionChain(species?.evolution_chain?.url);
 
-  if (!species || chain.isPending) return <ActivityIndicator style={styles.loading} color={ACCENT} />;
+  if (!species || chain.isPending) return <ActivityIndicator style={styles.loading} color={colors.accent} />;
   if (chain.error) return <EmptyState>Couldn't load the evolution chain.</EmptyState>;
 
   const pairs = evolutionPairs(chain.data.chain);
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
   stageName: {
     marginTop: 6,
     fontSize: 14,
-    color: '#1F2A37',
+    color: colors.ink,
   },
   current: {
     fontWeight: '700',
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     fontWeight: '600',
-    color: '#1F2A37',
+    color: colors.ink,
     textAlign: 'center',
   },
 });

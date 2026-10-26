@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,10 +8,11 @@ import { formatName } from '../../../../lib/format';
 import { generationLabel } from '../../../../lib/regions';
 import { dexPokemonOfType, typeMatchups } from '../../../../lib/typeInfo';
 import { typeColor } from '../../../../lib/types';
-import { BackArrow, PokeballWatermark } from '../../../../components/Icons';
 import PokemonGrid from '../../../../components/PokemonGrid';
 import SheetTabs from '../../../../components/SheetTabs';
-import { ACCENT, EmptyState, SectionTitle } from '../../../../components/detail/shared';
+import { EmptyState, SectionTitle, StatusMessage } from '../../../../components/ui';
+import { colors } from '../../../../theme';
+import ColorHeader from '../../../../components/ColorHeader';
 
 const SECTIONS = [
   { key: 'matchups', label: 'Matchups' },
@@ -71,18 +72,10 @@ export default function TypeScreen() {
   const matchups = useMemo(() => typeMatchups(query.data), [query.data]);
   const pokemon = useMemo(() => dexPokemonOfType(query.data), [query.data]);
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/types'));
-
   return (
     <View style={[styles.screen, { backgroundColor: color }]}>
       <StatusBar style="light" />
-      <PokeballWatermark size={200} opacity={0.16} style={[styles.headerBall, { top: insets.top - 10 }]} />
-
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={goBack} hitSlop={12} style={styles.back} accessibilityRole="button" accessibilityLabel="Back">
-          <BackArrow />
-        </Pressable>
-        <Text style={styles.title}>{formatName(name)}</Text>
+      <ColorHeader title={formatName(name)} fallback="/types">
         {query.data ? (
           <Text style={styles.subtitle}>
             {[
@@ -94,17 +87,13 @@ export default function TypeScreen() {
               .join(' · ')}
           </Text>
         ) : null}
-      </View>
+      </ColorHeader>
 
       <View style={styles.sheet}>
         <SheetTabs tabs={SECTIONS} value={section} onChange={setSection} />
         <View style={styles.body}>
-          {query.isPending ? (
-            <ActivityIndicator style={styles.loading} color={ACCENT} />
-          ) : query.error ? (
-            <Pressable onPress={() => query.refetch()} style={styles.loading}>
-              <Text style={styles.errorText}>Couldn't load this type. Tap to retry.</Text>
-            </Pressable>
+          {query.isPending || query.error ? (
+            <StatusMessage loading={query.isPending} error={query.error} onRetry={() => query.refetch()} message="Couldn't load this type." />
           ) : section === 'matchups' ? (
             matchups ? <Matchups matchups={matchups} insets={insets} /> : <EmptyState>No matchup data.</EmptyState>
           ) : (
@@ -119,23 +108,6 @@ export default function TypeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  headerBall: {
-    position: 'absolute',
-    right: -40,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  back: {
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 34,
-    fontWeight: '800',
   },
   subtitle: {
     color: 'rgba(255,255,255,0.9)',
@@ -163,15 +135,15 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4B5563',
+    color: colors.body,
     marginBottom: 8,
   },
   multiplier: {
-    color: '#A0A8B3',
+    color: colors.faint,
   },
   none: {
     fontSize: 13,
-    color: '#A0A8B3',
+    color: colors.faint,
   },
   chips: {
     flexDirection: 'row',
@@ -193,13 +165,5 @@ const styles = StyleSheet.create({
   },
   gridSpacer: {
     height: 14,
-  },
-  loading: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#5B6573',
-    fontSize: 15,
   },
 });

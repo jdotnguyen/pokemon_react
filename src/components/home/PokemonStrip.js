@@ -2,8 +2,10 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { usePokemon } from '../../api/pokeapi';
-import { artworkUrl, formatName } from '../../lib/format';
+import { formatName } from '../../lib/format';
 import { primaryColor } from '../../lib/types';
+import { colors } from '../../theme';
+import { artworkUrl } from '../../lib/sprites';
 
 function StripItem({ id }) {
   const { data } = usePokemon(id);
@@ -49,13 +51,13 @@ export default function PokemonStrip({ title, ids, actionLabel, onAction }) {
 
 const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 },
-  title: { fontSize: 18, fontWeight: '800', color: '#1F2A37' },
-  action: { fontSize: 13, fontWeight: '700', color: '#6C79DB' },
+  title: { fontSize: 18, fontWeight: '800', color: colors.ink },
+  action: { fontSize: 13, fontWeight: '700', color: colors.accent },
   scroll: { flexGrow: 0, flexShrink: 0, marginHorizontal: -20 },
   content: { paddingHorizontal: 20, gap: 12 },
   item: { width: 78 },
   pressed: { opacity: 0.7 },
   avatar: { width: 78, height: 78, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   art: { width: 66, height: 66 },
-  name: { fontSize: 12, fontWeight: '600', color: '#4B5563', textAlign: 'center', marginTop: 6 },
+  name: { fontSize: 12, fontWeight: '600', color: colors.body, textAlign: 'center', marginTop: 6 },
 });

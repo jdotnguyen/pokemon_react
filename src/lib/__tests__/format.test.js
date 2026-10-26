@@ -1,14 +1,7 @@
-import {
-  evolutionPairs,
-  formatHeight,
-  formatName,
-  formatWeight,
-  genderRatio,
-  idFromUrl,
-  levelUpMoves,
-  padId,
-  typeDefenses,
-} from '../format';
+import { formatHeight, formatName, formatWeight, genderRatio, idFromUrl, padId } from '../format';
+import { evolutionPairs } from '../species';
+import { levelUpMoves } from '../moves';
+import { typeDefenses } from '../typeInfo';
 
 const species = (name, id) => ({ name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` });
 

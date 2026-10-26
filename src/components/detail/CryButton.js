@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 import { useAudioPlayer } from 'expo-audio';
-import { cryUrl } from '../../lib/format';
 import { Speaker } from '../Icons';
+import { cryUrl } from '../../lib/sprites';
 
 /** Plays the Pokémon's cry. Requires `expo-audio` (npx expo install expo-audio). */
 export default function CryButton({ pokemon }) {

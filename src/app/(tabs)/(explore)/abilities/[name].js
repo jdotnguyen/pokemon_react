@@ -4,7 +4,7 @@ import { cleanEffect, dexRows } from '../../../../lib/browse';
 import { englishEntry, formatName } from '../../../../lib/format';
 import { generationLabel } from '../../../../lib/regions';
 import DetailList from '../../../../components/browse/DetailList';
-import { Para } from '../../../../components/detail/shared';
+import { Para } from '../../../../components/ui';
 
 export default function AbilityScreen() {
   const { name } = useLocalSearchParams();

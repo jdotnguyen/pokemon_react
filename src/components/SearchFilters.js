@@ -2,8 +2,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { formatName } from '../lib/format';
 import { generationLabel } from '../lib/regions';
 import { ALL_TYPES, typeColor } from '../lib/types';
-import { Chip } from './detail/shared';
+import { Chip } from './ui';
 import { GRID_GAP } from './PokemonGrid';
+import { colors } from '../theme';
 
 const genChipLabel = (slug) => generationLabel(slug).replace('Generation ', 'Gen ');
 
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#8A94A1',
+    color: colors.muted,
     textTransform: 'uppercase',
     marginTop: 4,
     marginBottom: 6,
@@ -72,11 +73,11 @@ const styles = StyleSheet.create({
   },
   count: {
     fontSize: 13,
-    color: '#5B6573',
+    color: colors.subtle,
   },
   clear: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6C79DB',
+    color: colors.accent,
   },
 });

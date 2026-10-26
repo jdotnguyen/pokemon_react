@@ -1,20 +1,10 @@
-import { Pressable, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
-import { BackArrow } from './Icons';
+import { StyleSheet } from 'react-native';
+import BackButton from './BackButton';
+import { colors } from '../theme';
 
-/** Back arrow for screens that used to be tab roots and now sit one level inside a hub. */
-export default function HubBack({ fallback }) {
-  return (
-    <Pressable
-      onPress={() => (router.canGoBack() ? router.back() : router.replace(fallback))}
-      hitSlop={12}
-      style={styles.button}
-      accessibilityRole="button"
-      accessibilityLabel="Back"
-    >
-      <BackArrow color="#1F2A37" />
-    </Pressable>
-  );
+/** Back arrow that sits above a ScreenTitle on white screens. Takes BackButton's `fallback` / `to`. */
+export default function HubBack(props) {
+  return <BackButton {...props} color={colors.ink} style={styles.button} />;
 }
 
 const styles = StyleSheet.create({

@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { artworkUrl } from '../../lib/format';
 import { useBestStreak } from '../../lib/quizStats';
 import { PokeballWatermark } from '../Icons';
 import { useDaily } from './useDaily';
+import { artworkUrl } from '../../lib/sprites';
 
 /** Quiz teaser: a silhouette and your best streak. */
 export default function QuizCard() {

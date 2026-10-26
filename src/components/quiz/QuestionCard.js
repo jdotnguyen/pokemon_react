@@ -1,9 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
-import { artworkUrl, formatName } from '../../lib/format';
+import { formatName } from '../../lib/format';
+import { colors } from '../../theme';
+import { artworkUrl } from '../../lib/sprites';
 
 export const QUIZ_GOOD = '#1E9E6A';
-export const QUIZ_BAD = '#D64545';
+export const QUIZ_BAD = colors.danger;
 
 /** A "Who's that Pokémon?" round: the silhouette (revealed once answered) and four name buttons. */
 export default function QuestionCard({ question, picked, onChoose }) {
@@ -18,7 +20,7 @@ export default function QuestionCard({ question, picked, onChoose }) {
           source={{ uri: artworkUrl(question.answer.id) }}
           style={styles.art}
           contentFit="contain"
-          tintColor={answered ? undefined : '#1F2A37'}
+          tintColor={answered ? undefined : colors.ink}
           cachePolicy="memory-disk"
         />
       </View>
@@ -55,14 +57,14 @@ export default function QuestionCard({ question, picked, onChoose }) {
 }
 
 const styles = StyleSheet.create({
-  stage: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#F6F7F9', borderRadius: 28, height: 280, marginTop: 14 },
+  stage: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card, borderRadius: 28, height: 280, marginTop: 14 },
   art: { width: 240, height: 240 },
-  result: { textAlign: 'center', fontSize: 18, fontWeight: '800', color: '#4B5563', marginTop: 16 },
+  result: { textAlign: 'center', fontSize: 18, fontWeight: '800', color: colors.body, marginTop: 16 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 14 },
-  option: { width: '48%', flexGrow: 1, borderRadius: 14, backgroundColor: '#F1F3F6', paddingVertical: 16, alignItems: 'center' },
+  option: { width: '48%', flexGrow: 1, borderRadius: 14, backgroundColor: colors.fill, paddingVertical: 16, alignItems: 'center' },
   optionRight: { backgroundColor: QUIZ_GOOD },
   optionWrong: { backgroundColor: QUIZ_BAD },
   optionDim: { opacity: 0.45 },
-  optionText: { fontSize: 16, fontWeight: '700', color: '#1F2A37' },
+  optionText: { fontSize: 16, fontWeight: '700', color: colors.ink },
   optionTextOn: { color: '#fff' },
 });

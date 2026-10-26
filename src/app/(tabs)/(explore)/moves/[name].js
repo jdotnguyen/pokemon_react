@@ -1,12 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { useMachines, useMove } from '../../../../api/pokeapi';
 import { cleanEffect, dexRows, machineLabel } from '../../../../lib/browse';
 import { englishEntry, formatName } from '../../../../lib/format';
 import { generationLabel, versionGroupLabel } from '../../../../lib/regions';
 import { typeColor } from '../../../../lib/types';
 import DetailList from '../../../../components/browse/DetailList';
-import { Para, SectionTitle, StatBox } from '../../../../components/detail/shared';
+import { Para, SectionTitle, StatBox } from '../../../../components/ui';
+import { colors } from '../../../../theme';
 
 function TmList({ machines }) {
   const results = useMachines(machines.map((m) => m.machine.url));
@@ -75,11 +76,11 @@ export default function MoveScreen() {
 const styles = StyleSheet.create({
   tags: { flexDirection: 'row', gap: 8, marginTop: 14 },
   tag: { borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5 },
-  tagPlain: { backgroundColor: '#F1F3F6' },
+  tagPlain: { backgroundColor: colors.fill },
   tagText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  tagTextPlain: { color: '#5B6573' },
-  target: { color: '#8A94A1', marginTop: 8 },
+  tagTextPlain: { color: colors.subtle },
+  target: { color: colors.muted, marginTop: 8 },
   tmRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
-  tm: { width: 64, fontSize: 14, fontWeight: '700', color: '#1F2A37' },
-  tmGame: { fontSize: 14, color: '#5B6573' },
+  tm: { width: 64, fontSize: 14, fontWeight: '700', color: colors.ink },
+  tmGame: { fontSize: 14, color: colors.subtle },
 });

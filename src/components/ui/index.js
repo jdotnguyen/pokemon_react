@@ -1,6 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-
-export const ACCENT = '#6C79DB';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors } from '../../theme';
 
 export function SectionTitle({ children }) {
   return <Text style={styles.sectionTitle}>{children}</Text>;
@@ -18,7 +17,7 @@ export function InfoRow({ label, children }) {
 }
 
 /** Pill toggle. `color` is the active background (defaults to the accent). */
-export function Chip({ label, active, onPress, color = ACCENT }) {
+export function Chip({ label, active, onPress, color = colors.accent }) {
   return (
     <Pressable
       onPress={onPress}
@@ -53,34 +52,51 @@ export function EmptyState({ children }) {
   return <Text style={styles.empty}>{children}</Text>;
 }
 
+/**
+ * Spinner while `loading`; a tap-to-retry message when `error` is set; nothing otherwise.
+ * `message` is the first sentence ("Couldn't load this type.") and " Tap to retry." is added.
+ * `style` / `textStyle` adjust spacing for screens that sit the message lower or tint it.
+ */
+export function StatusMessage({ loading, error, onRetry, message = "Couldn't reach PokeAPI.", style, textStyle }) {
+  if (loading) return <ActivityIndicator style={[styles.status, style]} color={colors.accent} />;
+  if (!error) return null;
+  return (
+    <Pressable onPress={onRetry} style={[styles.status, style]} accessibilityRole="button">
+      <Text style={[styles.statusText, textStyle]}>{`${message} Tap to retry.`}</Text>
+    </Pressable>
+  );
+}
+
 export const text = StyleSheet.create({
   value: {
     fontSize: 14,
-    color: '#1F2A37',
+    color: colors.ink,
   },
   muted: {
     fontSize: 14,
-    color: '#8A94A1',
+    color: colors.muted,
   },
 });
 
 const styles = StyleSheet.create({
-  para: { fontSize: 14, lineHeight: 21, color: '#4B5563', marginTop: 12 },
-  statBox: { flexDirection: 'row', backgroundColor: '#F6F7F9', borderRadius: 14, paddingVertical: 12, marginTop: 16 },
+  status: { marginTop: 40, alignItems: 'center' },
+  statusText: { color: colors.subtle, fontSize: 15 },
+  para: { fontSize: 14, lineHeight: 21, color: colors.body, marginTop: 12 },
+  statBox: { flexDirection: 'row', backgroundColor: colors.card, borderRadius: 14, paddingVertical: 12, marginTop: 16 },
   statCell: { flex: 1, alignItems: 'center' },
-  statCellValue: { fontSize: 16, fontWeight: '700', color: '#1F2A37' },
-  statCellLabel: { fontSize: 11, color: '#8A94A1', marginTop: 2 },
+  statCellValue: { fontSize: 16, fontWeight: '700', color: colors.ink },
+  statCellLabel: { fontSize: 11, color: colors.muted, marginTop: 2 },
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     marginRight: 8,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#5B6573',
+    color: colors.subtle,
   },
   chipTextActive: {
     color: '#fff',
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1F2A37',
+    color: colors.ink,
     marginTop: 24,
     marginBottom: 12,
   },
@@ -100,18 +116,18 @@ const styles = StyleSheet.create({
   label: {
     width: 100,
     fontSize: 14,
-    color: '#8A94A1',
+    color: colors.muted,
   },
   value: {
     flex: 1,
   },
   valueText: {
     fontSize: 14,
-    color: '#1F2A37',
+    color: colors.ink,
   },
   empty: {
     fontSize: 14,
-    color: '#8A94A1',
+    color: colors.muted,
     textAlign: 'center',
     marginTop: 24,
   },

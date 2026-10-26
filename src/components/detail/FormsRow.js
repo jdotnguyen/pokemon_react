@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
-import { ACCENT } from './shared';
+import { colors } from '../../theme';
 
 /** Horizontal chips for switching between a species' forms (Alolan, Mega...). */
 export default function FormsRow({ varieties, selectedId, onSelect }) {
@@ -45,16 +45,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     marginRight: 8,
   },
   chipActive: {
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accent,
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#5B6573',
+    color: colors.subtle,
   },
   labelActive: {
     color: '#fff',

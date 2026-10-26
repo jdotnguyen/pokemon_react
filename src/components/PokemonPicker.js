@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePokemonIndex } from '../api/pokeapi';
-import { artworkUrl, formatName, matchesQuery, padId } from '../lib/format';
-import { ACCENT } from './detail/shared';
+import { formatName, padId } from '../lib/format';
+import { colors } from '../theme';
+import { artworkUrl } from '../lib/sprites';
+import { matchesQuery } from '../lib/search';
+import { StatusMessage } from './ui';
 
 const MAX_RESULTS = 80;
 
@@ -36,7 +39,7 @@ export default function PokemonPicker({ visible, onClose, onPick }) {
             value={query}
             onChangeText={setQuery}
             placeholder="Name or number"
-            placeholderTextColor="#9AA3AE"
+            placeholderTextColor={colors.placeholder}
             autoCapitalize="none"
             autoCorrect={false}
             autoFocus
@@ -47,12 +50,8 @@ export default function PokemonPicker({ visible, onClose, onPick }) {
           </Pressable>
         </View>
 
-        {isPending ? (
-          <ActivityIndicator style={styles.center} color={ACCENT} />
-        ) : error ? (
-          <Pressable onPress={() => refetch()} style={styles.center}>
-            <Text style={styles.muted}>Couldn't load the Pokédex. Tap to retry.</Text>
-          </Pressable>
+        {isPending || error ? (
+          <StatusMessage loading={isPending} error={error} onRetry={() => refetch()} message="Couldn't load the Pokédex." style={styles.center} textStyle={styles.muted} />
         ) : (
           <FlatList
             data={results}
@@ -81,16 +80,16 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     paddingHorizontal: 14,
     fontSize: 16,
-    color: '#1F2A37',
+    color: colors.ink,
   },
-  cancel: { color: ACCENT, fontSize: 16, fontWeight: '600', marginLeft: 14 },
+  cancel: { color: colors.accent, fontSize: 16, fontWeight: '600', marginLeft: 14 },
   center: { marginTop: 40, textAlign: 'center', alignSelf: 'center' },
-  muted: { color: '#8A94A1', fontSize: 15 },
+  muted: { color: colors.muted, fontSize: 15 },
   row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 6 },
   thumb: { width: 48, height: 48, marginRight: 14 },
-  name: { flex: 1, fontSize: 16, color: '#1F2A37', fontWeight: '600' },
-  number: { fontSize: 14, color: '#8A94A1' },
+  name: { flex: 1, fontSize: 16, color: colors.ink, fontWeight: '600' },
+  number: { fontSize: 14, color: colors.muted },
 });

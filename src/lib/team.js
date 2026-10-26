@@ -1,6 +1,7 @@
-import { typeDefenses, formatName } from './format';
+import { formatName } from './format';
 import { createStore } from './storage';
 import { ALL_TYPES } from './types';
+import { typeDefenses } from './typeInfo';
 
 export const MAX_TEAM = 6;
 

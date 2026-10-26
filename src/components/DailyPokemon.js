@@ -2,12 +2,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { usePokemon, useSpecies } from '../api/pokeapi';
-import { englishEntry, formatName, padId, pickArtwork, speciesLabel } from '../lib/format';
+import { englishEntry, formatName, padId, speciesLabel } from '../lib/format';
 import { randomItem } from '../lib/daily';
 import { primaryColor } from '../lib/types';
 import { PokeballWatermark, Shuffle } from './Icons';
 import TypeBadge from './TypeBadge';
 import { useDaily } from './home/useDaily';
+import { colors } from '../theme';
+import { pickArtwork } from '../lib/sprites';
 
 /** Home hero: today's Pokémon in a big type-coloured card, with a button for a random one. */
 export default function DailyPokemon() {
@@ -69,7 +71,7 @@ export default function DailyPokemon() {
 
 const styles = StyleSheet.create({
   card: { borderRadius: 28, padding: 20, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', minHeight: 200 },
-  placeholder: { backgroundColor: '#EEF1F4' },
+  placeholder: { backgroundColor: colors.divider },
   pressed: { opacity: 0.85 },
   ball: { position: 'absolute', right: -50, top: -40 },
   text: { flex: 1, zIndex: 1, alignSelf: 'flex-start' },

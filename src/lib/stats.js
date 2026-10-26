@@ -1,4 +1,5 @@
 // Gen 3+ stat formulas.
+import { STAT_LABELS, formatName } from './format';
 export const STAT_KEYS = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
 export const MAX_IV = 31;
 export const MAX_EV = 252;
@@ -58,3 +59,30 @@ export const EV_PRESETS = [
   { key: 'special', label: 'Special', evs: { hp: 4, 'special-attack': 252, speed: 252 } },
   { key: 'tank', label: 'Bulky', evs: { hp: 252, defense: 252, 'special-defense': 4 } },
 ];
+
+/**
+ * Side-by-side stat comparison. `a`/`b` are `pokemon.stats` arrays.
+ * Each row has a `winner` of 'a', 'b', or null for a tie.
+ */
+export function compareStats(a = [], b = []) {
+  const bByName = Object.fromEntries(b.map((s) => [s.stat.name, s.base_stat]));
+  const winnerOf = (x, y) => (x === y ? null : x > y ? 'a' : 'b');
+  const rows = a.map((s) => {
+    const av = s.base_stat;
+    const bv = bByName[s.stat.name] ?? 0;
+    return {
+      key: s.stat.name,
+      label: STAT_LABELS[s.stat.name] ?? formatName(s.stat.name),
+      a: av,
+      b: bv,
+      winner: winnerOf(av, bv),
+    };
+  });
+  const sum = (list) => list.reduce((t, s) => t + s.base_stat, 0);
+  const total = { key: 'total', label: 'Total', a: sum(a), b: sum(b), winner: winnerOf(sum(a), sum(b)) };
+  const tally = {
+    a: rows.filter((r) => r.winner === 'a').length,
+    b: rows.filter((r) => r.winner === 'b').length,
+  };
+  return { rows, total, tally };
+}

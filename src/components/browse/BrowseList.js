@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { filterByQuery } from '../../lib/browse';
 import { ChevronRight } from '../Icons';
 import HubBack from '../HubBack';
+import PageWatermark from '../PageWatermark';
 import ScreenTitle from '../ScreenTitle';
-import { ACCENT } from '../detail/shared';
+import { colors } from '../../theme';
+import { filterByQuery } from '../../lib/search';
+import { StatusMessage } from '../ui';
 
 /**
  * Full-screen searchable list used by the Explore sections.
@@ -38,6 +40,7 @@ export default function BrowseList({
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <FlatList
         data={loading || error ? [] : data}
         keyExtractor={(item) => String(item.key)}
@@ -53,7 +56,7 @@ export default function BrowseList({
               value={query}
               onChangeText={setQuery}
               placeholder={placeholder}
-              placeholderTextColor="#9AA3AE"
+              placeholderTextColor={colors.placeholder}
               autoCapitalize="none"
               autoCorrect={false}
               clearButtonMode="while-editing"
@@ -63,12 +66,8 @@ export default function BrowseList({
           </View>
         }
         ListEmptyComponent={
-          loading ? (
-            <ActivityIndicator style={styles.status} color={ACCENT} />
-          ) : error ? (
-            <Pressable onPress={onRetry} style={styles.status}>
-              <Text style={styles.statusText}>Couldn't reach PokeAPI. Tap to retry.</Text>
-            </Pressable>
+          loading || error ? (
+            <StatusMessage loading={loading} error={error} onRetry={onRetry} style={styles.status} />
           ) : (
             <Text style={[styles.statusText, styles.status]}>{emptyText}</Text>
           )
@@ -111,29 +110,29 @@ const styles = StyleSheet.create({
   input: {
     height: 42,
     borderRadius: 12,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     paddingHorizontal: 14,
     fontSize: 16,
-    color: '#1F2A37',
+    color: colors.ink,
     marginHorizontal: 5,
     marginBottom: 12,
   },
   status: { marginTop: 40, textAlign: 'center', alignSelf: 'center', paddingHorizontal: 24 },
-  statusText: { color: '#5B6573', fontSize: 15 },
+  statusText: { color: colors.subtle, fontSize: 15 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    borderBottomColor: colors.divider,
   },
   pressed: { opacity: 0.6 },
   thumb: { width: 36, height: 36, marginRight: 12 },
   text: { flex: 1, marginRight: 8 },
-  label: { fontSize: 15, fontWeight: '600', color: '#1F2A37' },
-  sub: { fontSize: 12, color: '#8A94A1', marginTop: 1 },
-  badge: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, marginRight: 6, backgroundColor: '#F1F3F6' },
+  label: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  sub: { fontSize: 12, color: colors.muted, marginTop: 1 },
+  badge: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, marginRight: 6, backgroundColor: colors.fill },
   badgeText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  badgeTextPlain: { color: '#5B6573' },
+  badgeTextPlain: { color: colors.subtle },
 });

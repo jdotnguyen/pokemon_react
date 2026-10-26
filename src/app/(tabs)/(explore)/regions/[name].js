@@ -1,16 +1,18 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { VirtualList } from '../../../../components/VirtualList';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePokedex, useRegion } from '../../../../api/pokeapi';
 import { formatName, idFromUrl } from '../../../../lib/format';
 import { generationLabel, locationLabel, regionColor, versionGroupLabel } from '../../../../lib/regions';
-import { BackArrow, ChevronRight, PokeballWatermark } from '../../../../components/Icons';
+import { ChevronRight } from '../../../../components/Icons';
 import PokemonGrid from '../../../../components/PokemonGrid';
 import SheetTabs from '../../../../components/SheetTabs';
-import { ACCENT, EmptyState } from '../../../../components/detail/shared';
+import { EmptyState, StatusMessage } from '../../../../components/ui';
+import { colors } from '../../../../theme';
+import ColorHeader from '../../../../components/ColorHeader';
 
 const SECTIONS = [
   { key: 'pokedex', label: 'Pokédex' },
@@ -84,7 +86,7 @@ function Locations({ region }) {
   if (locations.length === 0) return <EmptyState>No locations recorded for this region.</EmptyState>;
 
   return (
-    <FlashList
+    <VirtualList
       data={locations}
       keyExtractor={(l) => l.name}
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: insets.bottom + 90 }}
@@ -109,19 +111,12 @@ export default function RegionScreen() {
   const region = useRegion(name);
   const color = regionColor(name);
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/regions'));
   const games = region.data?.version_groups.map((g) => versionGroupLabel(g.name)).join(' · ');
 
   return (
     <View style={[styles.screen, { backgroundColor: color }]}>
       <StatusBar style="light" />
-      <PokeballWatermark size={200} opacity={0.16} style={[styles.headerBall, { top: insets.top - 10 }]} />
-
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={goBack} hitSlop={12} style={styles.back} accessibilityRole="button" accessibilityLabel="Back">
-          <BackArrow />
-        </Pressable>
-        <Text style={styles.title}>{formatName(name)}</Text>
+      <ColorHeader title={formatName(name)} fallback="/regions">
         {region.data?.main_generation ? (
           <Text style={styles.subtitle}>{generationLabel(region.data.main_generation.name)}</Text>
         ) : null}
@@ -130,18 +125,14 @@ export default function RegionScreen() {
             {games}
           </Text>
         ) : null}
-      </View>
+      </ColorHeader>
 
       <View style={styles.sheet}>
         <SheetTabs tabs={SECTIONS} value={section} onChange={setSection} />
 
         <View style={styles.body}>
-          {region.isPending ? (
-            <ActivityIndicator style={styles.loading} color={ACCENT} />
-          ) : region.error ? (
-            <Pressable onPress={() => region.refetch()} style={styles.loading}>
-              <Text style={styles.errorText}>Couldn't load this region. Tap to retry.</Text>
-            </Pressable>
+          {region.isPending || region.error ? (
+            <StatusMessage loading={region.isPending} error={region.error} onRetry={() => region.refetch()} message="Couldn't load this region." />
           ) : section === 'pokedex' ? (
             <RegionalDex dexes={region.data.pokedexes} color={color} />
           ) : (
@@ -156,23 +147,6 @@ export default function RegionScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  headerBall: {
-    position: 'absolute',
-    right: -40,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  back: {
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 34,
-    fontWeight: '800',
   },
   subtitle: {
     color: 'rgba(255,255,255,0.9)',
@@ -211,12 +185,12 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   chipIdle: {
-    backgroundColor: '#EEF1F4',
+    backgroundColor: colors.divider,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#5B6573',
+    color: colors.subtle,
   },
   chipTextSelected: {
     color: '#fff',
@@ -227,21 +201,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    borderBottomColor: colors.divider,
   },
   rowPressed: {
     opacity: 0.5,
   },
   locationName: {
     fontSize: 15,
-    color: '#1F2A37',
-  },
-  loading: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#5B6573',
-    fontSize: 15,
+    color: colors.ink,
   },
 });

@@ -1,10 +1,12 @@
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BackArrow } from '../Icons';
+import HubBack from '../HubBack';
+import PageWatermark from '../PageWatermark';
+import ScreenTitle from '../ScreenTitle';
 import PokemonRow from '../PokemonRow';
-import { ACCENT, SectionTitle } from '../detail/shared';
+import { SectionTitle, StatusMessage } from '../ui';
+import { colors } from '../../theme';
 
 /**
  * Detail screen for a game concept (ability, move, item...). `children` is the info block at the top;
@@ -22,28 +24,24 @@ export default function DetailList({
   rowsTitle,
 }) {
   const insets = useSafeAreaInsets();
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace(backFallback));
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <FlatList
         data={rows}
         keyExtractor={(r) => String(r.id)}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}
         ListHeaderComponent={
           <View>
-            <Pressable onPress={goBack} hitSlop={12} style={styles.back} accessibilityRole="button" accessibilityLabel="Back">
-              <BackArrow color="#1F2A37" />
-            </Pressable>
-            <Text style={styles.title}>{title}</Text>
-            {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-            {loading ? (
-              <ActivityIndicator style={styles.status} color={ACCENT} />
-            ) : error ? (
-              <Pressable onPress={onRetry} style={styles.status}>
-                <Text style={styles.statusText}>Couldn't load this. Tap to retry.</Text>
-              </Pressable>
+            <View style={styles.header}>
+              <HubBack fallback={backFallback} />
+              <ScreenTitle style={subtitle ? styles.titleWithSub : null}>{title}</ScreenTitle>
+              {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+            </View>
+            {loading || error ? (
+              <StatusMessage loading={loading} error={error} onRetry={onRetry} message="Couldn't load this." />
             ) : (
               <>
                 {children}
@@ -61,9 +59,7 @@ export default function DetailList({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
   content: { paddingHorizontal: 24 },
-  back: { alignSelf: 'flex-start', marginTop: 8, marginBottom: 16 },
-  title: { fontSize: 30, fontWeight: '800', color: '#1F2A37' },
-  subtitle: { fontSize: 15, color: '#8A94A1', marginTop: 2 },
-  status: { marginTop: 40, alignItems: 'center' },
-  statusText: { color: '#5B6573', fontSize: 15 },
+  header: { marginHorizontal: -5 }, // HubBack/ScreenTitle bring their own 5px inset
+  titleWithSub: { marginBottom: 0 },
+  subtitle: { fontSize: 15, color: colors.muted, marginTop: 2, marginHorizontal: 5, marginBottom: 8 },
 });

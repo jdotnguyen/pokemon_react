@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePokemonList, useTypes } from '../api/pokeapi';
-import { artworkUrl, formatName } from '../lib/format';
+import { formatName } from '../lib/format';
 import {
   MAX_TEAM,
   createTeam,
@@ -22,10 +21,14 @@ import {
   useTeams,
 } from '../lib/team';
 import { typeColor } from '../lib/types';
-import { BackArrow } from '../components/Icons';
+import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
+import ScreenTitle from '../components/ScreenTitle';
 import PokemonPicker from '../components/PokemonPicker';
 import TextPrompt from '../components/TextPrompt';
-import { ACCENT, Chip, SectionTitle } from '../components/detail/shared';
+import { Chip, SectionTitle } from '../components/ui';
+import { colors } from '../theme';
+import { artworkUrl } from '../lib/sprites';
 
 const CELL = 30;
 const COL_GAP = 2; // margin each side, so columns are 4px apart without widening the grid
@@ -35,7 +38,7 @@ const CELL_STYLE = {
   2: { bg: '#F7A3A3', fg: '#7A1F1F', text: '2' },
   0.5: { bg: '#B5E8CB', fg: '#1D6B45', text: '½' },
   0.25: { bg: '#4CC38A', fg: '#fff', text: '¼' },
-  0: { bg: '#9AA3AE', fg: '#fff', text: '0' },
+  0: { bg: colors.placeholder, fg: '#fff', text: '0' },
 };
 
 function Slot({ id, index, onPress }) {
@@ -114,7 +117,6 @@ export default function TeamScreen() {
       { text: 'Delete', style: 'destructive', onPress: () => deleteTeam(activeTeam.id) },
     ]);
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/tools'));
   const onPick = (id) => {
     replaceInTeam(picking, id);
     setPicking(null);
@@ -123,13 +125,11 @@ export default function TeamScreen() {
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }}>
-        <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow color="#1F2A37" />
-          </Pressable>
-          <Text style={styles.title}>Team matchups</Text>
-          <View style={{ width: 26 }} />
+      <PageWatermark />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 40 }}>
+        <View style={styles.header}>
+          <HubBack fallback="/tools" />
+          <ScreenTitle>Team matchups</ScreenTitle>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.teamChips} contentContainerStyle={styles.teamChipsContent}>
@@ -159,7 +159,7 @@ export default function TeamScreen() {
         {team.length === 0 && (
           <Text style={styles.hint}>Add up to 6 Pokémon to see your team's shared weaknesses and type coverage.</Text>
         )}
-        {team.length > 0 && !ready && !failed && <ActivityIndicator style={{ marginTop: 40 }} color={ACCENT} />}
+        {team.length > 0 && !ready && !failed && <ActivityIndicator style={{ marginTop: 40 }} color={colors.accent} />}
         {failed && <Text style={styles.hint}>Couldn't load team data. Check your connection.</Text>}
 
         {ready && (
@@ -249,32 +249,25 @@ export default function TeamScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    marginBottom: 20,
-  },
-  title: { fontSize: 20, fontWeight: '800', color: '#1F2A37' },
+  header: { paddingHorizontal: 19 }, // HubBack/ScreenTitle add 5 each, lining up with the 24px body
   teamChips: { flexGrow: 0, flexShrink: 0 },
   teamChipsContent: { paddingHorizontal: 24 },
   teamActions: { flexDirection: 'row', gap: 20, paddingHorizontal: 24, marginTop: 10, marginBottom: 16 },
-  action: { fontSize: 13, fontWeight: '600', color: ACCENT },
+  action: { fontSize: 13, fontWeight: '600', color: colors.accent },
   actionOff: { opacity: 0.35 },
-  actionDanger: { color: '#D64545' },
+  actionDanger: { color: colors.danger },
   slots: { flexDirection: 'row', paddingHorizontal: 24, gap: 8 },
   slotWrap: { flex: 1 },
   slot: {
     aspectRatio: 1,
     borderRadius: 14,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  slotEmpty: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: '#D5DAE0', backgroundColor: '#FAFBFC' },
+  slotEmpty: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.border, backgroundColor: '#FAFBFC' },
   slotArt: { width: '88%', height: '88%' },
-  plus: { fontSize: 22, color: '#9AA3AE' },
+  plus: { fontSize: 22, color: colors.placeholder },
   remove: {
     position: 'absolute',
     top: -6,
@@ -282,19 +275,19 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#1F2A37',
+    backgroundColor: colors.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },
   removeText: { color: '#fff', fontSize: 13, lineHeight: 15, fontWeight: '700' },
-  hint: { textAlign: 'center', color: '#8A94A1', fontSize: 15, marginTop: 36, paddingHorizontal: 32 },
+  hint: { textAlign: 'center', color: colors.muted, fontSize: 15, marginTop: 36, paddingHorizontal: 32 },
   body: { paddingHorizontal: 24 },
   note: { fontSize: 13, lineHeight: 19, color: '#6B7480' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5 },
   chipText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-  chipMissing: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#D5DAE0' },
-  chipTextMissing: { color: '#A0A8B3' },
+  chipMissing: { backgroundColor: '#fff', borderWidth: 1, borderColor: colors.border },
+  chipTextMissing: { color: colors.faint },
   matrixHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   matrixRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 2 },
   typeCol: { width: 74 },
@@ -311,8 +304,8 @@ const styles = StyleSheet.create({
   cellText: { fontSize: 12, fontWeight: '700' },
   typeChip: { alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
   typeChipText: { color: '#fff', fontSize: 11, fontWeight: '600' },
-  countHead: { width: 32, textAlign: 'center', fontSize: 11, color: '#8A94A1' },
-  count: { width: 32, textAlign: 'center', fontSize: 13, fontWeight: '600', color: '#8A94A1' },
-  countBad: { color: '#D64545', fontWeight: '800' },
+  countHead: { width: 32, textAlign: 'center', fontSize: 11, color: colors.muted },
+  count: { width: 32, textAlign: 'center', fontSize: 13, fontWeight: '600', color: colors.muted },
+  countBad: { color: colors.danger, fontWeight: '800' },
   countGood: { color: '#1E9E6A', fontWeight: '800' },
 });

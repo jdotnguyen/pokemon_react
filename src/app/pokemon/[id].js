@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePokemon, useSpecies } from '../../api/pokeapi';
-import { englishEntry, formatName, padId, pickArtwork, speciesBadges, speciesVarieties } from '../../lib/format';
+import { englishEntry, formatName, padId } from '../../lib/format';
 import { primaryColor } from '../../lib/types';
 import { toggleFavourite, useIsFavourite } from '../../lib/favourites';
 import { recordRecent } from '../../lib/recent';
 import { addToTeam, MAX_TEAM, removeFromTeam, useActiveTeamName, useIsInTeam, useTeamIsFull } from '../../lib/team';
-import { BackArrow, Compare, Heart, PokeballWatermark, Sparkle, TeamIcon } from '../../components/Icons';
+import { Compare, Heart, PokeballWatermark, Sparkle, TeamIcon } from '../../components/Icons';
 import TypeBadge from '../../components/TypeBadge';
 import SheetTabs from '../../components/SheetTabs';
 import AboutTab from '../../components/detail/AboutTab';
@@ -20,7 +20,10 @@ import MovesTab from '../../components/detail/MovesTab';
 import LocationsTab from '../../components/detail/LocationsTab';
 import CryButton from '../../components/detail/CryButton';
 import FormsRow from '../../components/detail/FormsRow';
-import { ACCENT } from '../../components/detail/shared';
+import { pickArtwork } from '../../lib/sprites';
+import { speciesBadges, speciesVarieties } from '../../lib/species';
+import { StatusMessage } from '../../components/ui';
+import BackButton from '../../components/BackButton';
 
 const TABS = [
   { key: 'about', label: 'About', Component: AboutTab },
@@ -69,7 +72,6 @@ export default function PokemonDetailScreen() {
     addToTeam(current.variantId);
   };
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const ActiveTab = TABS.find((t) => t.key === tab).Component;
 
   return (
@@ -79,9 +81,7 @@ export default function PokemonDetailScreen() {
 
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow />
-          </Pressable>
+          <BackButton />
           <View style={styles.topActions}>
             <Pressable
               onPress={onTeamPress}
@@ -164,12 +164,8 @@ export default function PokemonDetailScreen() {
           onSelect={(variantId) => setView({ forId: id, variantId, shiny: current.shiny })}
         />
 
-        {pokemon.isPending ? (
-          <ActivityIndicator style={styles.loading} color={ACCENT} />
-        ) : pokemon.error ? (
-          <Pressable onPress={() => pokemon.refetch()} style={styles.loading}>
-            <Text style={styles.errorText}>Couldn't load this Pokémon. Tap to retry.</Text>
-          </Pressable>
+        {pokemon.isPending || pokemon.error ? (
+          <StatusMessage loading={pokemon.isPending} error={pokemon.error} onRetry={() => pokemon.refetch()} message="Couldn't load this Pokémon." />
         ) : (
           <ScrollView contentContainerStyle={[styles.tabContent, { paddingBottom: insets.bottom + 32 }]}>
             <ActiveTab pokemon={pokemon.data} species={species.data} name={name} color={color} />
@@ -275,13 +271,5 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingHorizontal: 24,
     paddingTop: 20,
-  },
-  loading: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#5B6573',
-    fontSize: 15,
   },
 });

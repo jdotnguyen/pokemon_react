@@ -3,10 +3,12 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { useBerry, useItem } from '../../../../api/pokeapi';
 import { berryFlavors, cleanEffect } from '../../../../lib/browse';
-import { englishEntry, formatName, itemSpriteUrl } from '../../../../lib/format';
+import { englishEntry, formatName } from '../../../../lib/format';
 import { typeColor } from '../../../../lib/types';
 import DetailList from '../../../../components/browse/DetailList';
-import { Para, SectionTitle, StatBox } from '../../../../components/detail/shared';
+import { Para, SectionTitle, StatBox } from '../../../../components/ui';
+import { colors } from '../../../../theme';
+import { itemSpriteUrl } from '../../../../lib/sprites';
 
 const FLAVOR_MAX = 40; // potency bars clamp here
 
@@ -77,10 +79,10 @@ const styles = StyleSheet.create({
   gift: { flexDirection: 'row', alignItems: 'center' },
   typeChip: { borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, marginRight: 12 },
   typeText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  power: { fontSize: 14, color: '#4B5563' },
+  power: { fontSize: 14, color: colors.body },
   flavorRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
-  flavorName: { width: 70, fontSize: 14, color: '#8A94A1' },
-  track: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#EEF1F4', overflow: 'hidden', marginHorizontal: 10 },
-  fill: { height: '100%', borderRadius: 3, backgroundColor: '#6C79DB' },
-  potency: { width: 28, fontSize: 14, fontWeight: '600', color: '#1F2A37', textAlign: 'right' },
+  flavorName: { width: 70, fontSize: 14, color: colors.muted },
+  track: { flex: 1, height: 6, borderRadius: 3, backgroundColor: colors.divider, overflow: 'hidden', marginHorizontal: 10 },
+  fill: { height: '100%', borderRadius: 3, backgroundColor: colors.accent },
+  potency: { width: 28, fontSize: 14, fontWeight: '600', color: colors.ink, textAlign: 'right' },
 });

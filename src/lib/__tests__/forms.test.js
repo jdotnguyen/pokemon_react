@@ -1,11 +1,5 @@
-import {
-  cryUrl,
-  heldItems,
-  pickArtwork,
-  speciesBadges,
-  speciesVarieties,
-  varietyLabel,
-} from '../format';
+import { cryUrl, pickArtwork } from '../sprites';
+import { heldItems, speciesBadges, speciesVarieties, varietyLabel } from '../species';
 
 describe('varietyLabel', () => {
   it('labels the default form Normal', () => {

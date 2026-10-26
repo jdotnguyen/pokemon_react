@@ -1,13 +1,13 @@
 import { Tabs } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { ACCENT } from '../../components/detail/shared';
+import { colors } from '../theme';
 
 // Web version of the tab bar: a floating, frosted-glass capsule at the bottom, like the iOS one.
 // (Native keeps the system tab bar in _layout.js.) It sits in the page flow under the screen,
 // so content never hides behind it.
 
-const MUTED = '#6B7280';
+const MUTED = colors.secondary;
 
 function Icon({ name, color }) {
   const common = { stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
@@ -52,7 +52,7 @@ function FloatingTabBar({ state, emitter, navigateToTab, insets }) {
           const item = ITEMS[route.name];
           if (!item) return null;
           const focused = state.index === index;
-          const color = focused ? ACCENT : MUTED;
+          const color = focused ? colors.accent : MUTED;
           const onPress = () => {
             const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!focused && !event.defaultPrevented) navigateToTab(route.key);

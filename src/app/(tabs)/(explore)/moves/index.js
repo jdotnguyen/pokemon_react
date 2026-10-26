@@ -5,7 +5,7 @@ import { useMoveIndex, useMoveList } from '../../../../api/pokeapi';
 import { formatName } from '../../../../lib/format';
 import { ALL_TYPES, typeColor } from '../../../../lib/types';
 import BrowseList from '../../../../components/browse/BrowseList';
-import { Chip } from '../../../../components/detail/shared';
+import { Chip } from '../../../../components/ui';
 
 const CLASSES = ['physical', 'special', 'status'];
 

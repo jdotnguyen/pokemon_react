@@ -16,6 +16,7 @@ import TypeOfDay from '../../components/home/TypeOfDay';
 import { useDaily } from '../../components/home/useDaily';
 import { useFavourites } from '../../lib/favourites';
 import { useRecent } from '../../lib/recent';
+import { colors } from '../../theme';
 
 function greeting(hour) {
   if (hour < 5) return 'Up late?';
@@ -117,14 +118,14 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
   content: { paddingHorizontal: 20 },
   header: { marginTop: 24 },
-  date: { fontSize: 13, fontWeight: '700', color: '#8A94A1', textTransform: 'uppercase', letterSpacing: 0.6 },
-  greeting: { fontSize: 32, fontWeight: '800', color: '#1F2A37', marginTop: 2 },
+  date: { fontSize: 13, fontWeight: '700', color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
+  greeting: { fontSize: 32, fontWeight: '800', color: colors.ink, marginTop: 2 },
   gap: { marginTop: 22 },
   row: { flexDirection: 'row', gap: 12 },
   pressed: { opacity: 0.85 },
   browse: {
     flex: 1,
-    backgroundColor: '#6C79DB',
+    backgroundColor: colors.accent,
     borderRadius: 22,
     padding: 16,
     minHeight: 150,

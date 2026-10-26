@@ -2,10 +2,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { usePokemonList, useTypes } from '../../api/pokeapi';
-import { artworkUrl, formatName } from '../../lib/format';
+import { formatName } from '../../lib/format';
 import { MAX_TEAM, sharedWeaknesses, teamDefense, useActiveTeamName, useTeam } from '../../lib/team';
 import { typeColor } from '../../lib/types';
 import { ChevronRight } from '../Icons';
+import { colors } from '../../theme';
+import { artworkUrl } from '../../lib/sprites';
 
 /** Your active team on Home: sprites plus its biggest shared weaknesses. */
 export default function TeamStrip() {
@@ -67,13 +69,13 @@ export default function TeamStrip() {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#F6F7F9', borderRadius: 20, padding: 16 },
+  card: { backgroundColor: colors.card, borderRadius: 20, padding: 16 },
   pressed: { opacity: 0.8 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  title: { fontSize: 17, fontWeight: '800', color: '#1F2A37' },
+  title: { fontSize: 17, fontWeight: '800', color: colors.ink },
   slots: { flexDirection: 'row', gap: 6 },
   slot: { flex: 1, aspectRatio: 1, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
-  slotEmpty: { backgroundColor: 'transparent', borderWidth: 1.5, borderStyle: 'dashed', borderColor: '#D5DAE0' },
+  slotEmpty: { backgroundColor: 'transparent', borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.border },
   art: { width: '90%', height: '90%' },
   note: { fontSize: 13, color: '#6B7480', marginTop: 12 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6, marginTop: 12 },

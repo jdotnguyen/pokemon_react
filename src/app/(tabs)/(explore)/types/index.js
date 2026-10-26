@@ -8,6 +8,7 @@ import { formatName } from '../../../../lib/format';
 import { ALL_TYPES, typeColor } from '../../../../lib/types';
 import { PokeballWatermark } from '../../../../components/Icons';
 import HubBack from '../../../../components/HubBack';
+import PageWatermark from '../../../../components/PageWatermark';
 import ScreenTitle from '../../../../components/ScreenTitle';
 
 const GAP = 12;
@@ -36,6 +37,7 @@ export default function TypesScreen() {
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}>
         <HubBack fallback="/explore" />
         <ScreenTitle>Types</ScreenTitle>

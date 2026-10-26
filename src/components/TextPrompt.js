@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { ACCENT } from './detail/shared';
+import { colors } from '../theme';
 
 /** Small centred dialog with one text field (Alert.prompt is iOS-only, so this works everywhere). */
 export default function TextPrompt({ visible, title, initial = '', placeholder, confirmLabel = 'Save', onSubmit, onClose }) {
@@ -23,7 +23,7 @@ export default function TextPrompt({ visible, title, initial = '', placeholder, 
             value={value}
             onChangeText={setValue}
             placeholder={placeholder}
-            placeholderTextColor="#9AA3AE"
+            placeholderTextColor={colors.placeholder}
             autoFocus
             selectTextOnFocus
             maxLength={30}
@@ -48,9 +48,9 @@ export default function TextPrompt({ visible, title, initial = '', placeholder, 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   card: { width: '100%', maxWidth: 360, backgroundColor: '#fff', borderRadius: 20, padding: 20 },
-  title: { fontSize: 17, fontWeight: '800', color: '#1F2A37', marginBottom: 12 },
-  input: { height: 44, borderRadius: 12, backgroundColor: '#F1F3F6', paddingHorizontal: 14, fontSize: 16, color: '#1F2A37' },
+  title: { fontSize: 17, fontWeight: '800', color: colors.ink, marginBottom: 12 },
+  input: { height: 44, borderRadius: 12, backgroundColor: colors.fill, paddingHorizontal: 14, fontSize: 16, color: colors.ink },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 24, marginTop: 18 },
-  cancel: { fontSize: 16, color: '#8A94A1', fontWeight: '600' },
-  confirm: { fontSize: 16, color: ACCENT, fontWeight: '700' },
+  cancel: { fontSize: 16, color: colors.muted, fontWeight: '600' },
+  confirm: { fontSize: 16, color: colors.accent, fontWeight: '700' },
 });

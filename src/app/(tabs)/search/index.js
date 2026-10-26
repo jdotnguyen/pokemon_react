@@ -1,23 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
-import { Stack } from 'expo-router';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { router, Stack } from 'expo-router';
 import { useGeneration, useGenerations, usePokemonIndex, useTypes } from '../../../api/pokeapi';
-import { formatName } from '../../../lib/format';
+import { matchesQuery } from '../../../lib/search';
 import { hasFlag, statOf, useStatIndex } from '../../../lib/statIndex';
 import { dexPokemonOfType, intersectIds, speciesIdsOfGeneration } from '../../../lib/typeInfo';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BackArrow } from '../../../components/Icons';
+import HubBack from '../../../components/HubBack';
+import PageWatermark from '../../../components/PageWatermark';
+import ScreenTitle from '../../../components/ScreenTitle';
 import PokemonGrid from '../../../components/PokemonGrid';
 import SearchFilters from '../../../components/SearchFilters';
 import StatFilters, { statLabel } from '../../../components/StatFilters';
+import { colors } from '../../../theme';
 
-// Search by name ("char") or number ("4", "#004").
-function matches(item, query) {
-  const q = query.trim().toLowerCase().replace(/^#/, '');
-  if (!q) return true;
-  if (/^\d+$/.test(q)) return String(item.id).startsWith(String(Number(q)));
-  return item.name.includes(q.replace(/\s+/g, '-')) || formatName(item.name).toLowerCase().includes(q);
-}
+// iOS/Android put the search field in the system header (and iOS 26 splits it into the tab bar).
+// The web build has no native search bar, so it draws its own header with a text field instead.
+const IS_WEB = Platform.OS === 'web';
 
 export default function SearchScreen() {
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const { data, isPending, error, refetch } = usePokemonIndex();
 
@@ -54,7 +57,7 @@ export default function SearchScreen() {
 
   const results = useMemo(() => {
     if (filterLoading || statsMissing) return [];
-    let list = (data ?? []).filter((p) => matches(p, query) && (!allowed || allowed.has(p.id)));
+    let list = (data ?? []).filter((p) => matchesQuery(p, query) && (!allowed || allowed.has(p.id)));
     const rows = stats.rows;
     if (rows && cats.length > 0) list = list.filter((p) => rows[p.id] && cats.some((c) => hasFlag(rows[p.id], c)));
     if (rows && minStat) list = list.filter((p) => rows[p.id] && statOf(rows[p.id], minStat.key) >= minStat.value);
@@ -83,11 +86,32 @@ export default function SearchScreen() {
 
   return (
     <>
-      {/* The grid must stay the first child so the large title collapses as it scrolls. */}
+      {/* On native the grid must stay the first child so the large title collapses as it scrolls. */}
+      {IS_WEB ? <PageWatermark /> : null}
       <PokemonGrid
         data={results}
         header={
           <View>
+          {IS_WEB ? (
+            <View style={{ paddingTop: insets.top }}>
+              <HubBack to="/" />
+              <ScreenTitle>Search</ScreenTitle>
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Name or number"
+                placeholderTextColor={colors.placeholder}
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                returnKeyType="search"
+                inputMode="search"
+                enterKeyHint="search"
+                accessibilityLabel="Search Pokémon by name or number"
+                style={styles.input}
+              />
+            </View>
+          ) : null}
           <SearchFilters
             extraActive={extraActive}
             types={types}
@@ -125,8 +149,14 @@ export default function SearchScreen() {
         contentInsetAdjustmentBehavior="automatic"
       />
       <Stack.Screen
-        options={{
+        options={IS_WEB ? { title: 'Search', headerShown: false } : {
           title: 'Search',
+          // Same back arrow as the other screens; the large title sits under it.
+          headerLeft: () => (
+            <Pressable onPress={() => router.navigate('/')} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
+              <BackArrow color={colors.ink} />
+            </Pressable>
+          ),
           headerLargeTitleEnabled: true,
           headerSearchBarOptions: {
             placement: 'automatic',
@@ -140,3 +170,17 @@ export default function SearchScreen() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  // Matches the search field on the Explore lists.
+  input: {
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: colors.fill,
+    paddingHorizontal: 14,
+    fontSize: 16,
+    color: colors.ink,
+    marginHorizontal: 5,
+    marginBottom: 12,
+  },
+});

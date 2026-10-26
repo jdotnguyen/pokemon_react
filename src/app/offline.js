@@ -3,8 +3,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
 import ScreenTitle from '../components/ScreenTitle';
-import { ACCENT } from '../components/detail/shared';
 import {
   offlinePack,
   offlineSupported,
@@ -13,6 +13,7 @@ import {
   startOffline,
   useOfflineStatus,
 } from '../lib/offline';
+import { colors } from '../theme';
 
 const formatBytes = (n) => (n >= 1024 ** 3 ? `${(n / 1024 ** 3).toFixed(2)} GB` : `${Math.round(n / 1024 ** 2)} MB`);
 
@@ -57,6 +58,7 @@ export default function OfflineScreen() {
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}>
         <HubBack fallback="/tools" />
         <ScreenTitle>Offline mode</ScreenTitle>
@@ -135,22 +137,22 @@ export default function OfflineScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
   content: { paddingHorizontal: 15, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  body: { fontSize: 15, lineHeight: 22, color: '#4B5563', marginHorizontal: 5, marginBottom: 18 },
+  body: { fontSize: 15, lineHeight: 22, color: colors.body, marginHorizontal: 5, marginBottom: 18 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, marginHorizontal: 5, marginBottom: 18 },
   box: { width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: '#C9D1D8', alignItems: 'center', justifyContent: 'center' },
-  boxOn: { backgroundColor: ACCENT, borderColor: ACCENT },
+  boxOn: { backgroundColor: colors.accent, borderColor: colors.accent },
   tick: { color: '#fff', fontWeight: '800', fontSize: 14, lineHeight: 16 },
-  rowTitle: { fontSize: 15, fontWeight: '700', color: '#1F2A37' },
-  rowSub: { fontSize: 13, color: '#6B7280', marginTop: 2 },
-  button: { backgroundColor: ACCENT, borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginHorizontal: 5, marginBottom: 18 },
+  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  rowSub: { fontSize: 13, color: colors.secondary, marginTop: 2 },
+  button: { backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginHorizontal: 5, marginBottom: 18 },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   card: { backgroundColor: '#F4F5FB', borderRadius: 16, padding: 16, marginHorizontal: 5, marginBottom: 14 },
   track: { height: 8, borderRadius: 4, backgroundColor: '#DDE0F3', overflow: 'hidden', marginBottom: 12 },
-  fill: { height: 8, borderRadius: 4, backgroundColor: ACCENT },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: '#1F2A37' },
-  cardSub: { fontSize: 13, color: '#6B7280', marginTop: 3 },
+  fill: { height: 8, borderRadius: 4, backgroundColor: colors.accent },
+  cardTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  cardSub: { fontSize: 13, color: colors.secondary, marginTop: 3 },
   error: { color: '#B42318', fontSize: 14, marginHorizontal: 5, marginBottom: 12 },
-  note: { color: '#6B7280', fontSize: 13, marginHorizontal: 5, marginBottom: 12 },
+  note: { color: colors.secondary, fontSize: 13, marginHorizontal: 5, marginBottom: 12 },
   facts: { marginHorizontal: 5, gap: 6, marginTop: 4 },
-  fact: { fontSize: 13, color: '#6B7280', lineHeight: 18 },
+  fact: { fontSize: 13, color: colors.secondary, lineHeight: 18 },
 });

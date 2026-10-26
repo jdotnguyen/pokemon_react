@@ -3,11 +3,13 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useItem, useMachines } from '../../../../api/pokeapi';
 import { cleanEffect, dexRows, machineLabel } from '../../../../lib/browse';
-import { englishEntry, formatName, idFromUrl, itemSpriteUrl } from '../../../../lib/format';
+import { englishEntry, formatName, idFromUrl } from '../../../../lib/format';
 import { versionGroupLabel } from '../../../../lib/regions';
 import DetailList from '../../../../components/browse/DetailList';
 import { ChevronRight } from '../../../../components/Icons';
-import { Para, SectionTitle, StatBox } from '../../../../components/detail/shared';
+import { Para, SectionTitle, StatBox } from '../../../../components/ui';
+import { colors } from '../../../../theme';
+import { itemSpriteUrl } from '../../../../lib/sprites';
 
 // What a TM / HM teaches, per game.
 function TeachesList({ machines }) {
@@ -86,9 +88,9 @@ export default function ItemScreen() {
 
 const styles = StyleSheet.create({
   sprite: { width: 72, height: 72, marginTop: 14 },
-  attrs: { color: '#8A94A1', fontSize: 12, marginTop: 8 },
+  attrs: { color: colors.muted, fontSize: 12, marginTop: 8 },
   teachRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
   teachText: { flex: 1 },
-  teachMove: { fontSize: 15, fontWeight: '600', color: '#1F2A37' },
-  teachGame: { fontSize: 12, color: '#8A94A1', marginTop: 1 },
+  teachMove: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  teachGame: { fontSize: 12, color: colors.muted, marginTop: 1 },
 });

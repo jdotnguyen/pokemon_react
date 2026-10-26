@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { router } from 'expo-router';
 import { useItemList } from '../../../../api/pokeapi';
-import { formatName, itemSpriteUrl } from '../../../../lib/format';
+import { formatName } from '../../../../lib/format';
 import BrowseList from '../../../../components/browse/BrowseList';
+import { itemSpriteUrl } from '../../../../lib/sprites';
 
 export default function ItemsScreen() {
   const { data, isPending, error, refetch } = useItemList();

@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { STAT_LABELS } from '../lib/format';
 import { GRID_GAP } from './PokemonGrid';
-import { ACCENT, Chip } from './detail/shared';
+import { Chip } from './ui';
+import { colors } from '../theme';
 
 export const SORTS = [
   { key: 'number', label: 'Number' },
@@ -51,7 +52,7 @@ export default function StatFilters({ open, onToggleOpen, index, sort, onSort, c
         <View>
           {index.state === 'loading' && (
             <View style={styles.status}>
-              <ActivityIndicator color={ACCENT} size="small" />
+              <ActivityIndicator color={colors.accent} size="small" />
               <Text style={styles.statusText}>
                 Downloading stats{index.progress > 0 ? ` (${Math.round(index.progress * 100)}%)` : ''}. This is saved for next time.
               </Text>
@@ -119,11 +120,11 @@ export default function StatFilters({ open, onToggleOpen, index, sort, onSort, c
 const styles = StyleSheet.create({
   wrap: { marginHorizontal: GRID_GAP / 2, marginBottom: 10 },
   toggle: { alignSelf: 'flex-start', paddingVertical: 6 },
-  toggleText: { fontSize: 14, fontWeight: '700', color: ACCENT },
-  label: { fontSize: 12, fontWeight: '700', color: '#8A94A1', textTransform: 'uppercase', marginTop: 4, marginBottom: 6 },
+  toggleText: { fontSize: 14, fontWeight: '700', color: colors.accent },
+  label: { fontSize: 12, fontWeight: '700', color: colors.muted, textTransform: 'uppercase', marginTop: 4, marginBottom: 6 },
   scroll: { flexGrow: 0, flexShrink: 0, marginBottom: 10 },
-  status: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F6F7F9', borderRadius: 12, padding: 12, marginBottom: 10 },
+  status: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.card, borderRadius: 12, padding: 12, marginBottom: 10 },
   statusCol: { flex: 1 },
-  statusText: { flex: 1, fontSize: 13, color: '#5B6573' },
-  link: { fontSize: 13, fontWeight: '700', color: ACCENT, marginTop: 6 },
+  statusText: { flex: 1, fontSize: 13, color: colors.subtle },
+  link: { fontSize: 13, fontWeight: '700', color: colors.accent, marginTop: 6 },
 });

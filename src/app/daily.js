@@ -7,9 +7,11 @@ import { usePokemonIndex } from '../api/pokeapi';
 import { seededRng } from '../lib/daily';
 import { CHALLENGE_LENGTH, recordChallenge, useDailyChallenge } from '../lib/dailyChallenge';
 import { seededQuestions } from '../lib/quiz';
-import { BackArrow } from '../components/Icons';
+import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
+import ScreenTitle from '../components/ScreenTitle';
 import QuestionCard from '../components/quiz/QuestionCard';
-import { ACCENT } from '../components/detail/shared';
+import { colors } from '../theme';
 
 function Results({ score, total, streak, best, fresh }) {
   const message =
@@ -78,13 +80,11 @@ export default function DailyChallengeScreen() {
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }}>
-        <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow color="#1F2A37" />
-          </Pressable>
-          <Text style={styles.title}>Daily challenge</Text>
-          <View style={{ width: 26 }} />
+      <PageWatermark />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 40 }}>
+        <View style={styles.header}>
+          <HubBack fallback="/" />
+          <ScreenTitle>Daily challenge</ScreenTitle>
         </View>
 
         <View style={styles.body}>
@@ -132,24 +132,23 @@ export default function DailyChallengeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, marginBottom: 12 },
-  title: { fontSize: 20, fontWeight: '800', color: '#1F2A37' },
+  header: { paddingHorizontal: 19 }, // HubBack/ScreenTitle add 5 each, lining up with the 24px body
   body: { paddingHorizontal: 24 },
   progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-  progressText: { fontSize: 13, fontWeight: '700', color: '#8A94A1' },
+  progressText: { fontSize: 13, fontWeight: '700', color: colors.muted },
   dots: { flexDirection: 'row', gap: 6, marginTop: 10 },
   dot: { flex: 1, height: 5, borderRadius: 3, backgroundColor: '#E6E9F0' },
-  dotDone: { backgroundColor: ACCENT },
-  cta: { marginTop: 18, borderRadius: 14, backgroundColor: ACCENT, paddingVertical: 14, alignItems: 'center' },
+  dotDone: { backgroundColor: colors.accent },
+  cta: { marginTop: 18, borderRadius: 14, backgroundColor: colors.accent, paddingVertical: 14, alignItems: 'center' },
   ctaText: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  loading: { textAlign: 'center', color: '#8A94A1', marginTop: 60, fontSize: 15 },
-  results: { alignItems: 'center', backgroundColor: '#F6F7F9', borderRadius: 28, paddingVertical: 32, paddingHorizontal: 20, marginTop: 16 },
-  resultKicker: { fontSize: 12, fontWeight: '800', color: '#6C79DB', textTransform: 'uppercase', letterSpacing: 0.6 },
-  resultScore: { fontSize: 64, fontWeight: '800', color: '#1F2A37', marginTop: 8 },
-  resultMessage: { fontSize: 17, fontWeight: '700', color: '#4B5563' },
+  loading: { textAlign: 'center', color: colors.muted, marginTop: 60, fontSize: 15 },
+  results: { alignItems: 'center', backgroundColor: colors.card, borderRadius: 28, paddingVertical: 32, paddingHorizontal: 20, marginTop: 16 },
+  resultKicker: { fontSize: 12, fontWeight: '800', color: colors.accent, textTransform: 'uppercase', letterSpacing: 0.6 },
+  resultScore: { fontSize: 64, fontWeight: '800', color: colors.ink, marginTop: 8 },
+  resultMessage: { fontSize: 17, fontWeight: '700', color: colors.body },
   statsRow: { flexDirection: 'row', gap: 40, marginTop: 24 },
   stat: { alignItems: 'center' },
-  statValue: { fontSize: 28, fontWeight: '800', color: '#1F2A37' },
-  statLabel: { fontSize: 12, color: '#8A94A1', marginTop: 2 },
-  comeBack: { fontSize: 13, color: '#8A94A1', marginTop: 24, textAlign: 'center' },
+  statValue: { fontSize: 28, fontWeight: '800', color: colors.ink },
+  statLabel: { fontSize: 12, color: colors.muted, marginTop: 2 },
+  comeBack: { fontSize: 13, color: colors.muted, marginTop: 24, textAlign: 'center' },
 });

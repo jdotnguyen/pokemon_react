@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { colors } from '../../theme';
 
 const ACTIONS = [
   { label: 'Search', to: '/search' },
@@ -30,7 +31,7 @@ export default function QuickActions() {
 const styles = StyleSheet.create({
   scroll: { flexGrow: 0, flexShrink: 0, marginHorizontal: -20 },
   content: { paddingHorizontal: 20, gap: 8 },
-  pill: { borderRadius: 999, borderWidth: 1, borderColor: '#D5DAE0', paddingHorizontal: 16, paddingVertical: 9 },
-  pressed: { backgroundColor: '#F1F3F6' },
-  text: { fontSize: 14, fontWeight: '700', color: '#1F2A37' },
+  pill: { borderRadius: 999, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 9 },
+  pressed: { backgroundColor: colors.fill },
+  text: { fontSize: 14, fontWeight: '700', color: colors.ink },
 });

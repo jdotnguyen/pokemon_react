@@ -45,3 +45,25 @@ export function intersectIds(lists) {
   const [first, ...rest] = lists.map((l) => new Set(l));
   return new Set([...first].filter((id) => rest.every((set) => set.has(id))));
 }
+
+/**
+ * Combine the damage relations of a Pokémon's types into a single
+ * multiplier per attacking type. `typeData` is an array of /type/{name}
+ * responses.
+ */
+export function typeDefenses(typeData = [], allTypes = []) {
+  const multipliers = Object.fromEntries(allTypes.map((t) => [t, 1]));
+  for (const data of typeData) {
+    const rel = data?.damage_relations;
+    if (!rel) continue;
+    rel.double_damage_from.forEach(({ name }) => (multipliers[name] = (multipliers[name] ?? 1) * 2));
+    rel.half_damage_from.forEach(({ name }) => (multipliers[name] = (multipliers[name] ?? 1) * 0.5));
+    rel.no_damage_from.forEach(({ name }) => (multipliers[name] = 0));
+  }
+  return multipliers;
+}
+
+/** How hard each of the attacker's types hits a defender, given the defender's multiplier map. */
+export function matchupMultipliers(attackerTypes = [], defenderMultipliers = {}) {
+  return attackerTypes.map((type) => ({ type, multiplier: defenderMultipliers[type] ?? 1 }));
+}

@@ -4,6 +4,7 @@ import { usePokemon, useSpecies } from '../../api/pokeapi';
 import { dailyIndex } from '../../lib/daily';
 import { factsFor } from '../../lib/facts';
 import { useDaily } from './useDaily';
+import { colors } from '../../theme';
 
 /** One "Did you know?" line about today's Pokémon, different each day. */
 export default function FactCard() {
@@ -28,6 +29,6 @@ export default function FactCard() {
 
 const styles = StyleSheet.create({
   card: { backgroundColor: '#EEF0FD', borderRadius: 18, padding: 16 },
-  kicker: { fontSize: 12, fontWeight: '800', color: '#6C79DB', textTransform: 'uppercase', letterSpacing: 0.6 },
-  text: { fontSize: 15, lineHeight: 22, color: '#1F2A37', marginTop: 6 },
+  kicker: { fontSize: 12, fontWeight: '800', color: colors.accent, textTransform: 'uppercase', letterSpacing: 0.6 },
+  text: { fontSize: 15, lineHeight: 22, color: colors.ink, marginTop: 6 },
 });

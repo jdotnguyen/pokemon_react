@@ -26,16 +26,6 @@ export function dexRows(list = [], noteOf) {
     .sort((a, b) => a.id - b.id);
 }
 
-/** Filter { label, search? } items by a free-text query (every word must match). */
-export function filterByQuery(items = [], query = '') {
-  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return items;
-  return items.filter((item) => {
-    const hay = `${item.label} ${item.search ?? ''}`.toLowerCase();
-    return words.every((w) => hay.includes(w));
-  });
-}
-
 /** Which stat a nature raises and lowers (both null for neutral natures). */
 export function natureEffect(nature) {
   return {

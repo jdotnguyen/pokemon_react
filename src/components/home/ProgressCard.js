@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useSeen } from '../../lib/seen';
 import { useDaily } from './useDaily';
+import { colors } from '../../theme';
 
 const SIZE = 84;
 const STROKE = 9;
@@ -29,7 +30,7 @@ export default function ProgressCard() {
             cx={SIZE / 2}
             cy={SIZE / 2}
             r={RADIUS}
-            stroke="#6C79DB"
+            stroke={colors.accent}
             strokeWidth={STROKE}
             strokeLinecap="round"
             fill="none"
@@ -53,10 +54,10 @@ export default function ProgressCard() {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#F6F7F9', borderRadius: 20, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 16 },
+  card: { backgroundColor: colors.card, borderRadius: 20, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 16 },
   ring: { width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' },
-  percent: { position: 'absolute', fontSize: 16, fontWeight: '800', color: '#1F2A37' },
+  percent: { position: 'absolute', fontSize: 16, fontWeight: '800', color: colors.ink },
   text: { flex: 1 },
-  title: { fontSize: 17, fontWeight: '800', color: '#1F2A37' },
+  title: { fontSize: 17, fontWeight: '800', color: colors.ink },
   sub: { fontSize: 13, color: '#6B7480', marginTop: 3 },
 });

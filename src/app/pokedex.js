@@ -6,7 +6,7 @@ import { usePokedexList } from '../api/pokeapi';
 import HubBack from '../components/HubBack';
 import PokemonGrid from '../components/PokemonGrid';
 import ScreenTitle from '../components/ScreenTitle';
-import { PokeballWatermark } from '../components/Icons';
+import PageWatermark from '../components/PageWatermark';
 
 /** The full National Dex grid (reached from Home → Pokédex). */
 export default function PokedexScreen() {
@@ -22,7 +22,7 @@ export default function PokedexScreen() {
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
-      <PokeballWatermark size={260} color="#1F2A37" opacity={0.04} style={[styles.headerBall, { top: insets.top - 90 }]} />
+      <PageWatermark />
       <PokemonGrid
         data={pokemon}
         header={
@@ -43,5 +43,4 @@ export default function PokedexScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  headerBall: { position: 'absolute', right: -70 },
 });

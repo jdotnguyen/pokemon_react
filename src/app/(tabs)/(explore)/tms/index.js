@@ -7,6 +7,7 @@ import { formatName } from '../../../../lib/format';
 import { versionGroupLabel } from '../../../../lib/regions';
 import BrowseList from '../../../../components/browse/BrowseList';
 import { ChevronRight } from '../../../../components/Icons';
+import { colors } from '../../../../theme';
 
 // Resolves the move a TM teaches in its newest game (2 small cached requests per visible row).
 function TmRow({ name }) {
@@ -62,11 +63,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    borderBottomColor: colors.divider,
   },
   pressed: { opacity: 0.6 },
-  tm: { width: 64, fontSize: 15, fontWeight: '800', color: '#6C79DB' },
+  tm: { width: 64, fontSize: 15, fontWeight: '800', color: colors.accent },
   text: { flex: 1, marginRight: 8 },
-  move: { fontSize: 15, fontWeight: '600', color: '#1F2A37' },
-  game: { fontSize: 12, color: '#8A94A1', marginTop: 1 },
+  move: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  game: { fontSize: 12, color: colors.muted, marginTop: 1 },
 });

@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useMove, useMoveIndex } from '../../api/pokeapi';
-import { availableMethods, formatName, moveEffect, movesByMethod } from '../../lib/format';
+import { formatName } from '../../lib/format';
 import { typeColor } from '../../lib/types';
-import { ACCENT, Chip, EmptyState } from './shared';
+import { Chip, EmptyState } from '../ui';
+import { colors } from '../../theme';
+import { availableMethods, moveEffect, movesByMethod } from '../../lib/moves';
 
 const CLASS_LABEL = { physical: 'Physical', special: 'Special', status: 'Status' };
 
@@ -19,7 +21,7 @@ function Stat({ label, value }) {
 
 function MoveDetail({ name }) {
   const { data, isPending, error } = useMove(name);
-  if (isPending) return <ActivityIndicator style={styles.detailLoading} color={ACCENT} />;
+  if (isPending) return <ActivityIndicator style={styles.detailLoading} color={colors.accent} />;
   if (error || !data) return <Text style={styles.effect}>Couldn't load this move.</Text>;
   const effect = moveEffect(data);
   return (
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
   },
   block: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    borderBottomColor: colors.divider,
   },
   row: {
     flexDirection: 'row',
@@ -136,11 +138,11 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 14,
-    color: '#1F2A37',
+    color: colors.ink,
   },
   cls: {
     fontSize: 11,
-    color: '#8A94A1',
+    color: colors.muted,
     marginTop: 1,
   },
   typeChip: {
@@ -161,7 +163,7 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: '#F6F7F9',
+    backgroundColor: colors.card,
     borderRadius: 12,
     paddingVertical: 10,
   },
@@ -172,23 +174,23 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1F2A37',
+    color: colors.ink,
   },
   statLabel: {
     fontSize: 11,
-    color: '#8A94A1',
+    color: colors.muted,
     marginTop: 2,
   },
   more: {
     fontSize: 13,
     fontWeight: '600',
-    color: ACCENT,
+    color: colors.accent,
     marginTop: 10,
   },
   effect: {
     fontSize: 13,
     lineHeight: 19,
-    color: '#4B5563',
+    color: colors.body,
     marginTop: 10,
   },
 });

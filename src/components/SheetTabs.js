@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ACCENT } from './detail/shared';
+import { colors } from '../theme';
 
 /**
  * Underlined text tabs used at the top of the white sheet on detail screens.
@@ -19,7 +19,7 @@ export default function SheetTabs({ tabs, value, onChange, spread = false }) {
             accessibilityState={{ selected: active }}
           >
             <Text style={[styles.text, active && styles.textActive]}>{t.label}</Text>
-            <View style={[styles.indicator, active && { backgroundColor: ACCENT }]} />
+            <View style={[styles.indicator, active && { backgroundColor: colors.accent }]} />
           </Pressable>
         );
       })}
@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    color: '#A0A8B3',
+    color: colors.faint,
     fontWeight: '500',
     paddingBottom: 12,
   },
   textActive: {
-    color: '#1F2A37',
+    color: colors.ink,
     fontWeight: '700',
   },
   indicator: {

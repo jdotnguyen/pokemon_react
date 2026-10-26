@@ -1,9 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTypes } from '../../api/pokeapi';
-import { formatMultiplier, formatName, STAT_LABELS, typeDefenses } from '../../lib/format';
+import { formatMultiplier, formatName, STAT_LABELS } from '../../lib/format';
 import { ALL_TYPES, typeColor } from '../../lib/types';
-import { EmptyState, SectionTitle } from './shared';
+import { EmptyState, SectionTitle } from '../ui';
+import { colors } from '../../theme';
+import { typeDefenses } from '../../lib/typeInfo';
 
 const STAT_MAX = 160; // bars clamp here; only a handful of Pokémon exceed it
 const TOTAL_MAX = 720;
@@ -97,19 +99,19 @@ const styles = StyleSheet.create({
   statLabel: {
     width: 80,
     fontSize: 14,
-    color: '#8A94A1',
+    color: colors.muted,
   },
   statValue: {
     width: 40,
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2A37',
+    color: colors.ink,
   },
   track: {
     flex: 1,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#EEF1F4',
+    backgroundColor: colors.divider,
     overflow: 'hidden',
   },
   fill: {
@@ -119,12 +121,12 @@ const styles = StyleSheet.create({
   calcLink: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6C79DB',
+    color: colors.accent,
     marginTop: 8,
   },
   caption: {
     fontSize: 14,
-    color: '#8A94A1',
+    color: colors.muted,
     marginBottom: 4,
   },
   defenseGroup: {
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
   defenseTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4B5563',
+    color: colors.body,
     marginBottom: 8,
   },
   chips: {

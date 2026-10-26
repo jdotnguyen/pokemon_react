@@ -3,11 +3,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { usePokemon } from '../api/pokeapi';
-import { artworkUrl, formatName, padId } from '../lib/format';
+import { formatName, padId } from '../lib/format';
 import { primaryColor } from '../lib/types';
 import { toggleFavourite, useIsFavourite } from '../lib/favourites';
 import { Heart, PokeballWatermark } from './Icons';
 import TypeBadge from './TypeBadge';
+import { artworkUrl } from '../lib/sprites';
 
 export const TILE_HEIGHT = 112;
 

@@ -1,11 +1,43 @@
-# pokemon_react
+# Nguyendex
 
-A Pokédex built on [PokeAPI](https://pokeapi.co) with Expo SDK 58 and Expo Router.
+A Pokédex built on [PokeAPI](https://pokeapi.co) with Expo SDK 58 and Expo Router. Runs on iOS and Android,
+and on the web as an installable, offline-capable PWA.
 
-- **Tabs** (`src/app/(tabs)/_layout.js`): the system tab bar via Expo Router native tabs — floating Liquid Glass on iOS 26+, Material bottom navigation on Android. Pokédex, Favourites and Search (the separate glass search button on iOS 26).
-- **List** (`src/app/(tabs)/index.js`): two-column tiles coloured by primary type, ordered by National Dex number. Uses `FlashList`, so only the tiles on screen are rendered. Pages of 60 load as you scroll, and each tile fetches its own types when it appears.
-- **Detail** (`src/app/pokemon/[id].js`): type-coloured header with the About, Base Stats (including type defenses), Evolution and Moves tabs.
-- Data fetching and caching use TanStack Query (`src/api/pokeapi.js`).
+## What's in it
+
+- **Tabs**: Home, Favourites, Explore, Tools and Search. iOS and Android use the system tab bar (Liquid Glass
+  on iOS 26+, with Search as its own round button; Material on Android). The web uses a floating capsule
+  bar instead (`src/components/TabLayout.js` / `TabLayout.web.js`).
+- **Home** (`src/app/(tabs)/index.js`): Pokémon of the day, quick actions, the daily challenge and quiz,
+  type of the day, a fact, your team, Pokédex progress, and recently viewed and favourite Pokémon.
+- **Pokédex** (`src/app/pokedex.js`): the National Dex as a two-column grid coloured by primary type.
+  Pages of 60 load as you scroll, and each tile fetches its own types when it appears.
+- **Pokémon** (`src/app/pokemon/[id].js`): type-coloured header with forms, shiny artwork and cry, plus
+  About, Base Stats, Evolution, Moves and Locations tabs.
+- **Explore**: types, regions (and their locations), moves, abilities, items, berries, TMs/HMs and natures.
+- **Tools**: team matchups, stat calculator, daily challenge, "Who's that Pokémon?", compare and offline mode.
+- **Search**: name or number, filtered by type, generation and stats. On the web it has its own search
+  field; on iOS/Android it uses the system search bar.
+
+## Project layout
+
+```
+src/
+  app/              Routes (Expo Router). (tabs)/ holds the five tabs; the tools and the Pokédex
+                    open full-screen from app/ directly.
+  api/pokeapi.js    Every PokeAPI request, as TanStack Query hooks (cached aggressively).
+  components/       Shared screen pieces: headers (HubBack, ScreenTitle, ColorHeader, PageWatermark),
+                    grids and tiles, pickers. Grouped by feature: home/, detail/ (Pokémon tabs),
+                    browse/ (Explore lists), quiz/.
+    ui/             Small primitives: Chip, SectionTitle, InfoRow, StatBox, StatusMessage...
+  lib/              Plain logic, no React Native UI: formatting (format.js), artwork URLs
+                    (sprites.js), species, moves, types, stats, search, and the small saved stores
+                    (favourites, team, recent...) built on storage.js.
+  theme.js          The shared colour palette.
+```
+
+Files ending in `.web.js` replace their sibling on the web only. They keep native-only libraries
+(Reanimated, expo-audio, expo-file-system, FlashList, native tabs) out of the web bundle.
 
 ## Setup
 

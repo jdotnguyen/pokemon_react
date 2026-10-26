@@ -1,4 +1,5 @@
 import Svg, { Circle, Line, Path } from 'react-native-svg';
+import { colors } from '../theme';
 
 /** Pokéball outline used as a background watermark. Opacity is applied to the whole SVG so overlaps don't stack. */
 export function PokeballWatermark({ size = 120, color = '#fff', opacity = 0.18, style }) {
@@ -34,7 +35,7 @@ export function Heart({ size = 24, color = '#fff', filled = false }) {
   );
 }
 
-export function ChevronRight({ size = 18, color = '#9AA3AE' }) {
+export function ChevronRight({ size = 18, color = colors.placeholder }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="M9 5l7 7-7 7" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />

@@ -1,8 +1,9 @@
 import { useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
-import { FORM_ID_START, artworkUrl, idFromUrl, itemSpriteUrl } from './format';
+import { FORM_ID_START, idFromUrl } from './format';
 import { createStore } from './storage';
 import { ALL_TYPES } from './types';
+import { artworkUrl, itemSpriteUrl } from './sprites';
 
 // "Download everything": walks every PokeAPI endpoint the app uses, plus (optionally) artwork, item
 // sprites and cries, and pulls each through the service worker (pwa/sw.js), which stores it. After

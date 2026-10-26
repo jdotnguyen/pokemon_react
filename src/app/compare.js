@@ -5,22 +5,18 @@ import { StatusBar } from 'expo-status-bar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePokemon, useTypes } from '../api/pokeapi';
-import {
-  compareStats,
-  formatHeight,
-  formatMultiplier,
-  formatName,
-  formatWeight,
-  matchupMultipliers,
-  padId,
-  pickArtwork,
-  typeDefenses,
-} from '../lib/format';
+import { formatHeight, formatMultiplier, formatName, formatWeight, padId } from '../lib/format';
 import { ALL_TYPES, primaryColor, typeColor } from '../lib/types';
-import { BackArrow } from '../components/Icons';
+import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
+import ScreenTitle from '../components/ScreenTitle';
 import PokemonPicker from '../components/PokemonPicker';
 import TypeBadge from '../components/TypeBadge';
-import { ACCENT, SectionTitle } from '../components/detail/shared';
+import { SectionTitle } from '../components/ui';
+import { colors } from '../theme';
+import { compareStats } from '../lib/stats';
+import { matchupMultipliers, typeDefenses } from '../lib/typeInfo';
+import { pickArtwork } from '../lib/sprites';
 
 const STAT_MAX = 160;
 const TOTAL_MAX = 720;
@@ -138,7 +134,6 @@ export default function CompareScreen() {
   const defA = typesReady ? typeDefenses(typeQueriesA.map((q) => q.data), ALL_TYPES) : {};
   const defB = typesReady ? typeDefenses(typeQueriesB.map((q) => q.data), ALL_TYPES) : {};
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const onPick = (id) => {
     router.setParams({ [picking]: String(id) });
     setPicking(null);
@@ -153,13 +148,11 @@ export default function CompareScreen() {
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }}>
-        <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow color="#1F2A37" />
-          </Pressable>
-          <Text style={styles.title}>Compare</Text>
-          <View style={{ width: 26 }} />
+      <PageWatermark />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 40 }}>
+        <View style={styles.header}>
+          <HubBack fallback="/" />
+          <ScreenTitle>Compare</ScreenTitle>
         </View>
 
         <View style={styles.slots}>
@@ -169,7 +162,7 @@ export default function CompareScreen() {
         </View>
 
         {a != null && b != null && !ready && !pa.error && !pb.error ? (
-          <ActivityIndicator style={{ marginTop: 40 }} color={ACCENT} />
+          <ActivityIndicator style={{ marginTop: 40 }} color={colors.accent} />
         ) : null}
         {(pa.error || pb.error) && <Text style={styles.hint}>Couldn't load one of the Pokémon.</Text>}
         {(a == null || b == null) && (
@@ -211,50 +204,43 @@ export default function CompareScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    marginBottom: 16,
-  },
-  title: { fontSize: 20, fontWeight: '800', color: '#1F2A37' },
+  header: { paddingHorizontal: 19 }, // HubBack/ScreenTitle add 5 each, lining up with the 24px body
   slots: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 },
-  vs: { width: 36, textAlign: 'center', fontSize: 13, fontWeight: '800', color: '#9AA3AE' },
+  vs: { width: 36, textAlign: 'center', fontSize: 13, fontWeight: '800', color: colors.placeholder },
   slot: { flex: 1, borderRadius: 24, padding: 12, alignItems: 'center', minHeight: 210 },
   slotEmpty: {
-    backgroundColor: '#F6F7F9',
+    backgroundColor: colors.card,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: '#D5DAE0',
+    borderColor: colors.border,
     justifyContent: 'center',
   },
-  plus: { fontSize: 36, color: '#9AA3AE', lineHeight: 40 },
-  slotEmptyText: { fontSize: 14, color: '#8A94A1', fontWeight: '600', marginTop: 4 },
+  plus: { fontSize: 36, color: colors.placeholder, lineHeight: 40 },
+  slotEmptyText: { fontSize: 14, color: colors.muted, fontWeight: '600', marginTop: 4 },
   slotArt: { width: 110, height: 110 },
   slotName: { color: '#fff', fontSize: 18, fontWeight: '800', marginTop: 6 },
   slotNumber: { color: '#fff', fontSize: 13, fontWeight: '600', opacity: 0.85 },
   slotTypes: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4, marginTop: 2 },
-  hint: { textAlign: 'center', color: '#8A94A1', fontSize: 15, marginTop: 28, paddingHorizontal: 24 },
+  hint: { textAlign: 'center', color: colors.muted, fontSize: 15, marginTop: 28, paddingHorizontal: 24 },
   body: { paddingHorizontal: 24, paddingTop: 20 },
-  verdict: { fontSize: 16, fontWeight: '700', color: '#1F2A37', textAlign: 'center' },
-  tally: { fontSize: 13, color: '#8A94A1', textAlign: 'center', marginTop: 4 },
+  verdict: { fontSize: 16, fontWeight: '700', color: colors.ink, textAlign: 'center' },
+  tally: { fontSize: 13, color: colors.muted, textAlign: 'center', marginTop: 4 },
   statBlock: { marginBottom: 10 },
-  statLabel: { textAlign: 'center', fontSize: 12, color: '#8A94A1', marginBottom: 4 },
+  statLabel: { textAlign: 'center', fontSize: 12, color: colors.muted, marginBottom: 4 },
   statLine: { flexDirection: 'row', alignItems: 'center' },
-  val: { width: 36, fontSize: 14, fontWeight: '600', color: '#1F2A37' },
+  val: { width: 36, fontSize: 14, fontWeight: '600', color: colors.ink },
   valLeft: { textAlign: 'left' },
   valRight: { textAlign: 'right' },
   valWin: { color: WIN, fontWeight: '800' },
-  track: { flex: 1, height: 6, backgroundColor: '#EEF1F4', overflow: 'hidden' },
+  track: { flex: 1, height: 6, backgroundColor: colors.divider, overflow: 'hidden' },
   trackLeft: { alignItems: 'flex-end', borderTopLeftRadius: 3, borderBottomLeftRadius: 3, marginRight: 1 },
   trackRight: { alignItems: 'flex-start', borderTopRightRadius: 3, borderBottomRightRadius: 3, marginLeft: 1 },
   fill: { height: '100%' },
   factRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
-  factValue: { flex: 1.3, fontSize: 13, color: '#1F2A37' },
-  factLabel: { flex: 0.8, textAlign: 'center', fontSize: 12, color: '#8A94A1' },
+  factValue: { flex: 1.3, fontSize: 13, color: colors.ink },
+  factLabel: { flex: 0.8, textAlign: 'center', fontSize: 12, color: colors.muted },
   matchup: { marginBottom: 14 },
-  matchupText: { fontSize: 13, fontWeight: '600', color: '#4B5563', marginBottom: 8 },
+  matchupText: { fontSize: 13, fontWeight: '600', color: colors.body, marginBottom: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5 },
   chipText: { color: '#fff', fontSize: 12, fontWeight: '600' },

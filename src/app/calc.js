@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNatures, usePokemon } from '../api/pokeapi';
 import { natureEffect, statShort } from '../lib/browse';
-import { artworkUrl, formatName, padId, STAT_LABELS } from '../lib/format';
+import { formatName, padId, STAT_LABELS } from '../lib/format';
 import {
   EV_PRESETS,
   MAX_EV,
@@ -20,11 +20,15 @@ import {
   setEv,
 } from '../lib/stats';
 import { primaryColor } from '../lib/types';
-import { BackArrow } from '../components/Icons';
+import HubBack from '../components/HubBack';
+import PageWatermark from '../components/PageWatermark';
+import ScreenTitle from '../components/ScreenTitle';
 import PokemonPicker from '../components/PokemonPicker';
-import { ACCENT, Chip, SectionTitle } from '../components/detail/shared';
+import { Chip, SectionTitle } from '../components/ui';
+import { colors } from '../theme';
+import { artworkUrl } from '../lib/sprites';
 
-const UP = '#D64545';
+const UP = colors.danger;
 const DOWN = '#3B82C4';
 const STAT_MAX = 400; // result bars clamp here
 
@@ -105,28 +109,24 @@ export default function CalcScreen() {
   const types = pokemon?.types.map((t) => t.type.name) ?? [];
   const usedEvs = evTotal(evs);
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/tools'));
-
   return (
     <View style={styles.screen}>
       <StatusBar style="dark" />
+      <PageWatermark />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 60 }}
+        contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 60 }}
       >
-        <View style={styles.topBar}>
-          <Pressable onPress={goBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
-            <BackArrow color="#1F2A37" />
-          </Pressable>
-          <Text style={styles.title}>Stat calculator</Text>
-          <View style={{ width: 26 }} />
+        <View style={styles.header}>
+          <HubBack fallback="/tools" />
+          <ScreenTitle>Stat calculator</ScreenTitle>
         </View>
 
         <View style={styles.body}>
           <Pressable
             onPress={() => setPicking('pokemon')}
-            style={[styles.pokemonCard, { backgroundColor: id ? primaryColor(types) : '#F6F7F9' }]}
+            style={[styles.pokemonCard, { backgroundColor: id ? primaryColor(types) : colors.card }]}
             accessibilityRole="button"
             accessibilityLabel="Choose Pokémon"
           >
@@ -257,54 +257,53 @@ export default function CalcScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, marginBottom: 12 },
-  title: { fontSize: 20, fontWeight: '800', color: '#1F2A37' },
+  header: { paddingHorizontal: 19 }, // HubBack/ScreenTitle add 5 each, lining up with the 24px body
   body: { paddingHorizontal: 24 },
   pokemonCard: { flexDirection: 'row', alignItems: 'center', borderRadius: 20, padding: 12, minHeight: 84 },
   art: { width: 64, height: 64, marginRight: 12 },
   pokemonName: { color: '#fff', fontSize: 20, fontWeight: '800' },
   pokemonNumber: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
-  choose: { flex: 1, textAlign: 'center', color: '#8A94A1', fontSize: 16, fontWeight: '600' },
+  choose: { flex: 1, textAlign: 'center', color: colors.muted, fontSize: 16, fontWeight: '600' },
   levelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   presets: { flexDirection: 'row' },
   presetScroll: { flexGrow: 0, flexShrink: 0 },
   numInput: {
     height: 38,
     borderRadius: 10,
-    backgroundColor: '#F1F3F6',
+    backgroundColor: colors.fill,
     textAlign: 'center',
     fontSize: 15,
     fontWeight: '600',
-    color: '#1F2A37',
+    color: colors.ink,
   },
-  natureButton: { backgroundColor: '#F1F3F6', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
-  natureButtonName: { fontSize: 16, fontWeight: '600', color: '#1F2A37' },
+  natureButton: { backgroundColor: colors.fill, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
+  natureButtonName: { fontSize: 16, fontWeight: '600', color: colors.ink },
   natureEffect: { fontSize: 13, fontWeight: '600', marginTop: 2 },
-  evCount: { fontSize: 12, color: '#8A94A1', marginTop: 8 },
+  evCount: { fontSize: 12, color: colors.muted, marginTop: 8 },
   evFull: { color: UP },
-  hint: { textAlign: 'center', color: '#8A94A1', fontSize: 15, marginTop: 32 },
+  hint: { textAlign: 'center', color: colors.muted, fontSize: 15, marginTop: 32 },
   tableHead: { flexDirection: 'row', alignItems: 'center', marginTop: 28, marginBottom: 6 },
-  th: { fontSize: 11, color: '#8A94A1', fontWeight: '600', textAlign: 'center' },
+  th: { fontSize: 11, color: colors.muted, fontWeight: '600', textAlign: 'center' },
   rowWrap: { marginBottom: 8 },
   tableRow: { flexDirection: 'row', alignItems: 'center' },
   colName: { flex: 1, textAlign: 'left' },
   colBase: { width: 40, textAlign: 'center' },
   colInput: { width: 50, alignItems: 'center' },
   colResult: { width: 52, textAlign: 'right' },
-  statName: { fontSize: 14, color: '#4B5563', fontWeight: '600' },
-  base: { fontSize: 14, color: '#8A94A1' },
-  result: { fontSize: 18, fontWeight: '800', color: '#1F2A37' },
-  track: { height: 4, borderRadius: 2, backgroundColor: '#EEF1F4', overflow: 'hidden', marginTop: 4 },
-  fill: { height: '100%', borderRadius: 2, backgroundColor: ACCENT },
+  statName: { fontSize: 14, color: colors.body, fontWeight: '600' },
+  base: { fontSize: 14, color: colors.muted },
+  result: { fontSize: 18, fontWeight: '800', color: colors.ink },
+  track: { height: 4, borderRadius: 2, backgroundColor: colors.divider, overflow: 'hidden', marginTop: 4 },
+  fill: { height: '100%', borderRadius: 2, backgroundColor: colors.accent },
   modal: { flex: 1, backgroundColor: '#fff' },
   modalTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  modalTitle: { fontSize: 18, fontWeight: '800', color: '#1F2A37' },
-  cancel: { color: ACCENT, fontSize: 16, fontWeight: '600' },
+  modalTitle: { fontSize: 18, fontWeight: '800', color: colors.ink },
+  cancel: { color: colors.accent, fontSize: 16, fontWeight: '600' },
   natureRow: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#EEF1F4',
+    borderBottomColor: colors.divider,
   },
-  natureName: { fontSize: 16, fontWeight: '600', color: '#1F2A37' },
+  natureName: { fontSize: 16, fontWeight: '600', color: colors.ink },
 });

@@ -1,8 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { artworkUrl, formatName, padId } from '../lib/format';
+import { formatName, padId } from '../lib/format';
 import { ChevronRight } from './Icons';
+import { colors } from '../theme';
+import { artworkUrl } from '../lib/sprites';
 
 /** Compact Pokémon row (thumbnail, name, number, optional note) that opens the detail screen. */
 export default function PokemonRow({ id, name, note }) {
@@ -29,10 +31,10 @@ export default function PokemonRow({ id, name, note }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
   pressed: { opacity: 0.6 },
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F1F3F6', marginRight: 12, overflow: 'hidden' },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.fill, marginRight: 12, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
   text: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '600', color: '#1F2A37' },
-  note: { fontSize: 12, color: '#8A94A1', marginTop: 1 },
-  number: { fontSize: 13, color: '#8A94A1', marginRight: 6 },
+  name: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  note: { fontSize: 12, color: colors.muted, marginTop: 1 },
+  number: { fontSize: 13, color: colors.muted, marginRight: 6 },
 });
